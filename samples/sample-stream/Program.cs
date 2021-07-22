@@ -6,6 +6,8 @@ using Streamiz.Kafka.Net.Table;
 using System;
 using System.Linq;
 using System.Threading;
+using Microsoft.Extensions.Logging;
+using Streamiz.Kafka.Net.Crosscutting;
 
 namespace sample_stream
 {
@@ -17,9 +19,10 @@ namespace sample_stream
     {
         static async System.Threading.Tasks.Task Main(string[] args)
         {
+            ConfigureLog4Net();
             var config = new StreamConfig<StringSerDes, StringSerDes>();
             config.ApplicationId = "test-app";
-            config.BootstrapServers = "localhost:9093";
+            config.BootstrapServers = "localhost:9092";
             config.AutoOffsetReset = Confluent.Kafka.AutoOffsetReset.Earliest;
           
             StreamBuilder builder = new StreamBuilder();
@@ -61,6 +64,12 @@ namespace sample_stream
                     Console.WriteLine($"{s.Key}|{s.Value}");
                 Thread.Sleep(5000);
             }
+        }
+
+        private static void ConfigureLog4Net()
+        {
+            var loggerFactory =  LoggerFactory.Create(builder => builder.AddLog4Net());
+            Logger.LoggerFactory = loggerFactory;
         }
     }
 }

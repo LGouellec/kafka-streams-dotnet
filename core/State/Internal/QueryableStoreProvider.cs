@@ -1,5 +1,4 @@
 ﻿using Streamiz.Kafka.Net.Errors;
-using Streamiz.Kafka.Net.Processors;
 using System.Collections.Generic;
 using System.Linq;
 

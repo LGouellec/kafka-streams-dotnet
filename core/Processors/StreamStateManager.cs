@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using Streamiz.Kafka.Net.Crosscutting;
 using Streamiz.Kafka.Net.Processors.Internal;
-using log4net;
+using Microsoft.Extensions.Logging;
 
 namespace Streamiz.Kafka.Net.Processors
 {
     internal class StreamStateManager
     {
-        private readonly ILog log = Logger.GetLogger(typeof(StreamStateManager));
+        private readonly ILogger log = Logger.GetLogger(typeof(StreamStateManager));
         private readonly Dictionary<long, ThreadState> threadState;
         private readonly KafkaStream stream;
         private GlobalThreadState globalThreadState;
@@ -35,7 +33,7 @@ namespace Streamiz.Kafka.Net.Processors
 
             if (stream.SetState(KafkaStream.State.ERROR))
             {
-                log.Error("All stream threads have died. The instance will be in error state and should be closed.");
+                log.LogError("All stream threads have died. The instance will be in error state and should be closed");
             }
         }
 
@@ -106,7 +104,7 @@ namespace Streamiz.Kafka.Net.Processors
                     {
                         if (stream.SetState(KafkaStream.State.ERROR))
                         {
-                            log.Error("Global thread has died. The instance will be in error state and should be closed.");
+                            log.LogError("Global thread has died. The instance will be in error state and should be closed");
                         }
                     }
                 }

@@ -1,16 +1,10 @@
 ﻿using Confluent.Kafka;
 using NUnit.Framework;
-using Streamiz.Kafka.Net.Errors;
-using Streamiz.Kafka.Net.Kafka;
 using Streamiz.Kafka.Net.Mock;
-using Streamiz.Kafka.Net.Mock.Kafka;
 using Streamiz.Kafka.Net.Mock.Sync;
-using Streamiz.Kafka.Net.Processors;
-using Streamiz.Kafka.Net.Processors.Internal;
 using Streamiz.Kafka.Net.SerDes;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 

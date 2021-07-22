@@ -1,5 +1,4 @@
-﻿using Streamiz.Kafka.Net.Processors;
-using Streamiz.Kafka.Net.State.Internal;
+﻿using Streamiz.Kafka.Net.State.Internal;
 
 namespace Streamiz.Kafka.Net
 {

@@ -3,7 +3,6 @@ using Streamiz.Kafka.Net.SerDes;
 using Streamiz.Kafka.Net.Stream.Internal.Graph.Nodes;
 using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 
 namespace Streamiz.Kafka.Net.Stream.Internal
 {

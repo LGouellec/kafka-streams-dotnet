@@ -1,5 +1,4 @@
 ﻿using Confluent.Kafka;
-using log4net;
 using Streamiz.Kafka.Net.Crosscutting;
 using Streamiz.Kafka.Net.Errors;
 using Streamiz.Kafka.Net.Kafka;
@@ -9,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Microsoft.Extensions.Logging;
 
 namespace Streamiz.Kafka.Net.Processors
 {
@@ -58,7 +58,7 @@ namespace Streamiz.Kafka.Net.Processors
             // ELSE one producer by StreamTask.
             if (configuration.Guarantee == ProcessingGuarantee.AT_LEAST_ONCE)
             {
-                log.Info($"{logPrefix}Creating shared producer client");
+                log.LogInformation("{LogPrefix}Creating shared producer client", logPrefix);
                 producer = kafkaSupplier.GetProducer(configuration.ToProducerConfig(GetThreadProducerClientId(threadId)));
             }
 
@@ -67,7 +67,7 @@ namespace Streamiz.Kafka.Net.Processors
 
             var listener = new StreamsRebalanceListener(manager);
 
-            log.Info($"{logPrefix}Creating consumer client");
+            log.LogInformation("{LogPrefix}Creating consumer client", logPrefix);
             var consumer = kafkaSupplier.GetConsumer(configuration.ToConsumerConfig(GetConsumerClientId(customerID)), listener);
             manager.Consumer = consumer;
 
@@ -82,7 +82,7 @@ namespace Streamiz.Kafka.Net.Processors
         public ThreadState State { get; private set; }
 
         private readonly IStreamConfig streamConfig;
-        private readonly ILog log = Logger.GetLogger(typeof(StreamThread));
+        private readonly ILogger log = Logger.GetLogger(typeof(StreamThread));
         private readonly Thread thread;
         private readonly IConsumer<byte[], byte[]> consumer;
         private readonly TaskManager manager;
@@ -176,7 +176,7 @@ namespace Streamiz.Kafka.Net.Processors
                             DateTime n = DateTime.Now;
                             var count = AddToTasks(records);
                             if (count > 0)
-                                log.Debug($"Add {count} records in tasks in {DateTime.Now - n}");
+                                log.LogDebug("Add {Count} records in tasks in {DateTime}", count, DateTime.Now - n);
 
                             n = DateTime.Now;
                             int processed = 0;
@@ -222,7 +222,7 @@ namespace Streamiz.Kafka.Net.Processors
                                 SetState(ThreadState.RUNNING);
 
                             if (records.Any())
-                                log.Debug($"Processing {count} records in {DateTime.Now - n}");
+                                log.LogDebug("Processing {Count} records in {DateTime}", count, DateTime.Now - n);
                         }
                     }
                     catch (TaskMigratedException e)
@@ -232,13 +232,15 @@ namespace Streamiz.Kafka.Net.Processors
                     catch (KafkaException e)
                     {
                         exception = e;
-                        log.Error($"{logPrefix}Encountered the following unexpected Kafka exception during processing, " +
-                            $"this usually indicate Streams internal errors:", exception);
+                        log.LogError(e,
+                            
+                                "{LogPrefix}Encountered the following unexpected Kafka exception during processing, this usually indicate Streams internal errors:",
+                                logPrefix);
                     }
                     catch (Exception e)
                     {
                         exception = e;
-                        log.Error($"{logPrefix}Encountered the following error during processing:", exception);
+                        log.LogError(exception, "{LogPrefix}Encountered the following error during processing:", logPrefix);
                     }
                 }
 
@@ -255,7 +257,7 @@ namespace Streamiz.Kafka.Net.Processors
                 }
                 catch (Exception e)
                 {
-                    log.Error($"{logPrefix}Failed to close consumer due to the following error:", e);
+                    log.LogError(e, "{LogPrefix}Failed to close consumer due to the following error:", logPrefix);
                 }
             }
         }
@@ -267,7 +269,7 @@ namespace Streamiz.Kafka.Net.Processors
             if (State == ThreadState.RUNNING || State == ThreadState.STARTING)
                 return consumeTimeout;
 
-            log.Error($"{logPrefix}Unexpected state {State} during normal iteration");
+            log.LogError("{LogPrefix}Unexpected state {State} during normal iteration", logPrefix, State);
             throw new StreamsException($"Unexpected state {State} during normal iteration");
         }
 
@@ -282,8 +284,10 @@ namespace Streamiz.Kafka.Net.Processors
                 {
                     if (task.IsClosed)
                     {
-                        log.Info($"Stream task {task.Id} is already closed, probably because it got unexpectedly migrated to another thread already. " +
-                            $"Notifying the thread to trigger a new rebalance immediately.");
+                        log.LogInformation(
+                            
+                                "Stream task {TaskId} is already closed, probably because it got unexpectedly migrated to another thread already. Notifying the thread to trigger a new rebalance immediately",
+                                task.Id);
                         // TODO gesture this behaviour
                         //throw new TaskMigratedException(task);
                     }
@@ -292,7 +296,10 @@ namespace Streamiz.Kafka.Net.Processors
                 }
                 else if (consumer.Assignment.Contains(record.TopicPartition))
                 {
-                    log.Error($"Unable to locate active task for received-record partition {record.TopicPartition}. Current tasks: {string.Join(",", manager.ActiveTaskIds)}. Current Consumer Assignment : {string.Join(",", consumer.Assignment.Select(t => $"{t.Topic}-[{t.Partition}]"))}");
+                    log.LogError(
+                        "Unable to locate active task for received-record partition {TopicPartition}. Current tasks: {TaskIDs}. Current Consumer Assignment : {Assignment}",
+                        record.TopicPartition, string.Join(",", manager.ActiveTaskIds),
+                        string.Join(",", consumer.Assignment.Select(t => $"{t.Topic}-[{t.Partition}]")));
                     throw new NullReferenceException($"Task was unexpectedly missing for partition {record.TopicPartition}");
                 }                
             }
@@ -316,10 +323,10 @@ namespace Streamiz.Kafka.Net.Processors
 
         public void Start(CancellationToken token)
         {
-            log.Info($"{logPrefix}Starting");
+            log.LogInformation("{LogPrefix}Starting", logPrefix);
             if (SetState(ThreadState.STARTING) == null)
             {
-                log.Info($"{logPrefix}StreamThread already shutdown. Not running");
+                log.LogInformation("{LogPrefix}StreamThread already shutdown. Not running", logPrefix);
                 IsRunning = false;
                 return;
             }
@@ -336,9 +343,10 @@ namespace Streamiz.Kafka.Net.Processors
 
         private void HandleTaskMigrated(TaskMigratedException e)
         {
-            log.Warn($"{logPrefix}Detected that the thread is being fenced. " +
-                         "This implies that this thread missed a rebalance and dropped out of the consumer group. " +
-                         "Will close out all assigned tasks and rejoin the consumer group.", e);
+            log.LogWarning(e,
+                
+                    "{LogPrefix}Detected that the thread is being fenced. This implies that this thread missed a rebalance and dropped out of the consumer group. Will close out all assigned tasks and rejoin the consumer group",
+                    logPrefix);
 
             manager.HandleLostAll();
             consumer.Unsubscribe();
@@ -347,9 +355,10 @@ namespace Streamiz.Kafka.Net.Processors
 
         private void HandleInnerException()
         {
-            log.Warn($"{logPrefix}Detected that the thread throw an inner exception. " +
-                $"Your configuration manager has decided to continue running stream processing. " +
-                "So will close out all assigned tasks and rejoin the consumer group.");
+            log.LogWarning(
+                
+                    "{LogPrefix}Detected that the thread throw an inner exception. Your configuration manager has decided to continue running stream processing. So will close out all assigned tasks and rejoin the consumer group",
+                    logPrefix);
 
             manager.HandleLostAll();
             consumer.Unsubscribe();
@@ -362,14 +371,18 @@ namespace Streamiz.Kafka.Net.Processors
             if (DateTime.Now - lastCommit > TimeSpan.FromMilliseconds(commitTimeMs))
             {
                 DateTime beginCommit = DateTime.Now;
-                log.Debug($"Committing all active tasks {string.Join(",", manager.ActiveTaskIds)} since {(DateTime.Now - lastCommit).TotalMilliseconds}ms has elapsed (commit interval is {commitTimeMs}ms)");
+                log.LogDebug(
+                    "Committing all active tasks {TaskIDs} since {DateTime}ms has elapsed (commit interval is {CommitTime}ms)",
+                    string.Join(",", manager.ActiveTaskIds), (DateTime.Now - lastCommit).TotalMilliseconds,
+                    commitTimeMs);
                 committed = manager.CommitAll();
                 if (committed > 0)
-                    log.Debug($"Committed all active tasks {string.Join(",", manager.ActiveTaskIds)} in {(DateTime.Now - beginCommit).TotalMilliseconds}ms");
+                    log.LogDebug("Committed all active tasks {TaskIDs} in {TimeElapsed}ms",
+                        string.Join(",", manager.ActiveTaskIds), (DateTime.Now - beginCommit).TotalMilliseconds);
 
                 if (committed == -1)
                 {
-                    log.Debug("Unable to commit as we are in the middle of a rebalance, will try again when it completes.");
+                    log.LogDebug("Unable to commit as we are in the middle of a rebalance, will try again when it completes");
                 }
                 else
                 {
@@ -385,7 +398,7 @@ namespace Streamiz.Kafka.Net.Processors
             {
                 if (!IsDisposable)
                 {
-                    log.Info($"{logPrefix}Shutting down");
+                    log.LogInformation("{LogPrefix}Shutting down", logPrefix);
 
                     SetState(ThreadState.PENDING_SHUTDOWN);
 
@@ -399,13 +412,14 @@ namespace Streamiz.Kafka.Net.Processors
                         consumer.Dispose();
 
                     SetState(ThreadState.DEAD);
-                    log.Info($"{logPrefix}Shutdown complete");
+                    log.LogInformation("{LogPrefix}Shutdown complete", logPrefix);
                     IsDisposable = true;
                 }
             }
             catch (Exception e)
             {
-                log.Error($"{logPrefix}Failed to close stream thread due to the following error:", e);
+                log.LogError(e,
+                    "{LogPrefix}Failed to close stream thread due to the following error:", logPrefix);
             }
         }
 
@@ -425,14 +439,18 @@ namespace Streamiz.Kafka.Net.Processors
 
                 if (State == ThreadState.PENDING_SHUTDOWN && newState != ThreadState.DEAD)
                 {
-                    log.Debug($"{logPrefix}Ignoring request to transit from PENDING_SHUTDOWN to {newState}: only DEAD state is a valid next state");
+                    log.LogDebug(
+                        "{LogPrefix}Ignoring request to transit from PENDING_SHUTDOWN to {NewState}: only DEAD state is a valid next state",
+                        logPrefix, newState);
                     // when the state is already in PENDING_SHUTDOWN, all other transitions will be
                     // refused but we do not throw exception here
                     return null;
                 }
                 else if (State == ThreadState.DEAD)
                 {
-                    log.Debug($"{logPrefix}Ignoring request to transit from DEAD to {newState}: no valid next state after DEAD");
+                    log.LogDebug(
+                        "{LogPrefix}Ignoring request to transit from DEAD to {NewState}: no valid next state after DEAD", logPrefix,
+                        newState);
                     // when the state is already in NOT_RUNNING, all its transitions
                     // will be refused but we do not throw exception here
                     return null;
@@ -440,12 +458,14 @@ namespace Streamiz.Kafka.Net.Processors
                 else if (!State.IsValidTransition(newState))
                 {
                     string logPrefix = "";
-                    log.Error($"{logPrefix}Unexpected state transition from {oldState} to {newState}");
+                    log.LogError("{LogPrefix}Unexpected state transition from {OldState} to {NewState}", logPrefix, oldState,
+                        newState);
                     throw new StreamsException($"{logPrefix}Unexpected state transition from {oldState} to {newState}");
                 }
                 else
                 {
-                    log.Info($"{logPrefix}State transition from {oldState} to {newState}");
+                    log.LogInformation("{LogPrefix}State transition from {OldState} to {NewState}", logPrefix, oldState,
+                        newState);
                 }
 
                 State = newState;

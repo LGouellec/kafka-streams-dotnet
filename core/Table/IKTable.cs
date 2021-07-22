@@ -6,7 +6,6 @@ using Streamiz.Kafka.Net.Stream;
 using Streamiz.Kafka.Net.Table.Internal;
 using System;
 using System.Collections.Generic;
-using System.Net.WebSockets;
 
 namespace Streamiz.Kafka.Net.Table
 {

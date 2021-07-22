@@ -1,5 +1,4 @@
 ﻿using Confluent.Kafka;
-using Moq;
 using NUnit.Framework;
 using Streamiz.Kafka.Net.Crosscutting;
 using Streamiz.Kafka.Net.Mock;

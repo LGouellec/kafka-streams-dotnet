@@ -1,5 +1,4 @@
-﻿using log4net;
-using Streamiz.Kafka.Net.Crosscutting;
+﻿using Streamiz.Kafka.Net.Crosscutting;
 using Streamiz.Kafka.Net.Errors;
 using Streamiz.Kafka.Net.Processors.Internal;
 using Streamiz.Kafka.Net.State;
@@ -10,6 +9,7 @@ using Streamiz.Kafka.Net.Table.Internal.Graph;
 using Streamiz.Kafka.Net.Table.Internal.Graph.Nodes;
 using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 
 namespace Streamiz.Kafka.Net.Stream.Internal
 {
@@ -19,7 +19,7 @@ namespace Streamiz.Kafka.Net.Stream.Internal
 
         private int index = -1;
         private static readonly object _locker = new object();
-        private readonly ILog logger = Logger.GetLogger(typeof(InternalStreamBuilder));
+        private readonly ILogger logger = Logger.GetLogger(typeof(InternalStreamBuilder));
 
         internal IList<StreamGraphNode> nodes = new List<StreamGraphNode>();
         internal readonly RootNode root = new RootNode();
@@ -133,7 +133,7 @@ namespace Streamiz.Kafka.Net.Stream.Internal
 
         internal void AddGraphNode(StreamGraphNode root, StreamGraphNode node)
         {
-            logger.Debug($"Adding node {node} in root node {root}");
+            logger.LogDebug("Adding node {Node} in root node {Root}", node, root);
             root.AppendChild(node);
             nodes.Add(node);
         }

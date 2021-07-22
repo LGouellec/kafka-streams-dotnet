@@ -2,8 +2,6 @@
 using Streamiz.Kafka.Net.State;
 using Streamiz.Kafka.Net.State.Helper;
 using Streamiz.Kafka.Net.Stream;
-using System;
-using System.IO;
 
 namespace Streamiz.Kafka.Net.SerDes
 {

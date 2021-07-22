@@ -2,17 +2,13 @@
 using Moq;
 using NUnit.Framework;
 using RocksDbSharp;
-using Streamiz.Kafka.Net.Crosscutting;
-using Streamiz.Kafka.Net.Errors;
 using Streamiz.Kafka.Net.Processors;
 using Streamiz.Kafka.Net.Processors.Internal;
-using Streamiz.Kafka.Net.SerDes;
 using Streamiz.Kafka.Net.State.RocksDb;
 using Streamiz.Kafka.Net.Tests.Helpers;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 
 namespace Streamiz.Kafka.Net.Tests.Public

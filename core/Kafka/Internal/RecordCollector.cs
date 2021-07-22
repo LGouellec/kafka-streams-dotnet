@@ -1,5 +1,4 @@
 ﻿using Confluent.Kafka;
-using log4net;
 using Streamiz.Kafka.Net.Crosscutting;
 using Streamiz.Kafka.Net.Errors;
 using Streamiz.Kafka.Net.Processors.Internal;
@@ -7,6 +6,7 @@ using Streamiz.Kafka.Net.SerDes;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.Extensions.Logging;
 
 namespace Streamiz.Kafka.Net.Kafka.Internal
 {
@@ -23,7 +23,7 @@ namespace Streamiz.Kafka.Net.Kafka.Internal
         private readonly TaskId id;
 
         private readonly string logPrefix;
-        private readonly ILog log = Logger.GetLogger(typeof(RecordCollector));
+        private readonly ILogger log = Logger.GetLogger(typeof(RecordCollector));
 
 
         public RecordCollector(string logPrefix, IStreamConfig configuration, TaskId id) 
@@ -49,7 +49,7 @@ namespace Streamiz.Kafka.Net.Kafka.Internal
 
         public void Close()
         {
-            log.Debug($"{logPrefix}Closing producer");
+            log.LogDebug("{LogPrefix}Closing producer", logPrefix);
             if(producer != null)
             {
                 lock (_lock)
@@ -66,7 +66,7 @@ namespace Streamiz.Kafka.Net.Kafka.Internal
 
         public void Flush()
         {
-            log.Debug($"{logPrefix}Flusing producer");
+            log.LogDebug("{LogPrefix}Flushing producer", logPrefix);
             if (producer != null)
             {
                 try
@@ -128,13 +128,13 @@ namespace Streamiz.Kafka.Net.Kafka.Internal
                     if (IsFatalError(report))
                     {
                         sb.AppendLine($"{logPrefix}Written offsets would not be recorded and no more records would be sent since this is a fatal error.");
-                        log.Error(sb.ToString());
+                        log.LogError(sb.ToString());
                         throw new StreamsException(sb.ToString());
                     }
                     else if (IsRecoverableError(report))
                     {
                         sb.AppendLine($"{logPrefix}Written offsets would not be recorded and no more records would be sent since the producer is fenced, indicating the task may be migrated out");
-                        log.Error(sb.ToString());
+                        log.LogError(sb.ToString());
                         throw new TaskMigratedException(sb.ToString());
                     }
                     else
@@ -142,23 +142,25 @@ namespace Streamiz.Kafka.Net.Kafka.Internal
                         if (configuration.ProductionExceptionHandler(report) == ExceptionHandlerResponse.FAIL)
                         {
                             sb.AppendLine($"{logPrefix}Exception handler choose to FAIL the processing, no more records would be sent.");
-                            log.Error(sb.ToString());
+                            log.LogError(sb.ToString());
                             throw new ProductionException(sb.ToString());
                         }
                         else
                         {
                             sb.AppendLine($"{logPrefix}Exception handler choose to CONTINUE processing in spite of this error but written offsets would not be recorded.");
-                            log.Error(sb.ToString());
+                            log.LogError(sb.ToString());
                         }
                     }
                 }
                 else if (report.Status == PersistenceStatus.NotPersisted || report.Status == PersistenceStatus.PossiblyPersisted)
                 {
-                    log.Warn($"{logPrefix}Record not persisted or possibly persisted: (timestamp {report.Message.Timestamp.UnixTimestampMs}) topic=[{topic}] partition=[{report.Partition}] offset=[{report.Offset}]. May config Retry configuration, depends your use case.");
+                    log.LogWarning("{logPrefix}Record not persisted or possibly persisted: (timestamp {Timestamp}) topic=[{Topic}] partition=[{Partition}] offset=[{Offset}]. May config Retry configuration, depends your use case",
+                        logPrefix, report.Message.Timestamp.UnixTimestampMs, topic, report.Partition, report.Offset);
                 }
                 else if (report.Status == PersistenceStatus.Persisted)
                 {
-                    log.Debug($"{logPrefix}Record persisted: (timestamp {report.Message.Timestamp.UnixTimestampMs}) topic=[{topic}] partition=[{report.Partition}] offset=[{report.Offset}]");
+                    log.LogDebug("{LogPrefix}Record persisted: (timestamp {Timestamp}) topic=[{Topic}] partition=[{Partition}] offset=[{Offset}]",
+                        logPrefix, report.Message.Timestamp.UnixTimestampMs, topic, report.Partition, report.Offset);
                 }
 
             }

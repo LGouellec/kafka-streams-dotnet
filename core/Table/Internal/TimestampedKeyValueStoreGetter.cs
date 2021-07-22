@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Streamiz.Kafka.Net.State;
+﻿using Streamiz.Kafka.Net.State;
 
 namespace Streamiz.Kafka.Net.Table.Internal
 {

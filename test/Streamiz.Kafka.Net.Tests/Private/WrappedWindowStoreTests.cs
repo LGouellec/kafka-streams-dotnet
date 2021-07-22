@@ -6,7 +6,6 @@ using Streamiz.Kafka.Net.State.InMemory;
 using Streamiz.Kafka.Net.State.Internal;
 using Streamiz.Kafka.Net.Crosscutting;
 using System;
-using System.Globalization;
 using Streamiz.Kafka.Net.State;
 using System.Text;
 using System.Collections.Generic;

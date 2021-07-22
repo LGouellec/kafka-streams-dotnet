@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using Streamiz.Kafka.Net.Processors;
 using Streamiz.Kafka.Net.SerDes;
 using Streamiz.Kafka.Net.Stream.Internal;

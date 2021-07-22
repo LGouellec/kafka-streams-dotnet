@@ -13,7 +13,6 @@ using Streamiz.Kafka.Net.State.InMemory;
 using Streamiz.Kafka.Net.State.Logging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Streamiz.Kafka.Net.Tests.Stores
 {

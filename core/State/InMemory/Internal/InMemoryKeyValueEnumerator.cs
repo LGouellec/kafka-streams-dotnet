@@ -1,10 +1,8 @@
 ﻿using Streamiz.Kafka.Net.Crosscutting;
 using Streamiz.Kafka.Net.State.Enumerator;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Streamiz.Kafka.Net.State.InMemory.Internal
 {

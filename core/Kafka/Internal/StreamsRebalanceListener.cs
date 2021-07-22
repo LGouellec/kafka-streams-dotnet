@@ -1,5 +1,4 @@
 ﻿using Confluent.Kafka;
-using log4net;
 using Streamiz.Kafka.Net.Crosscutting;
 using Streamiz.Kafka.Net.Processors;
 using Streamiz.Kafka.Net.Processors.Internal;
@@ -7,12 +6,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Extensions.Logging;
 
 namespace Streamiz.Kafka.Net.Kafka.Internal
 {
     internal class StreamsRebalanceListener : IConsumerRebalanceListener
     {
-        private readonly ILog log = Logger.GetLogger(typeof(StreamsRebalanceListener));
+        private readonly ILogger log = Logger.GetLogger(typeof(StreamsRebalanceListener));
         private readonly TaskManager manager;
 
         internal StreamThread Thread { get; set; }
@@ -34,7 +34,7 @@ namespace Streamiz.Kafka.Net.Kafka.Internal
             sb.AppendLine($"Partition assignment took {DateTime.Now - start} ms.");
             sb.AppendLine($"\tCurrently assigned active tasks: {string.Join(",", this.manager.ActiveTaskIds)}");
             sb.AppendLine($"\tRevoked assigned active tasks: {string.Join(",", this.manager.RevokeTaskIds)}");
-            log.Info(sb.ToString());
+            log.LogInformation(sb.ToString());
         }
 
         public void PartitionsRevoked(IConsumer<byte[], byte[]> consumer, List<TopicPartitionOffset> partitions)
@@ -48,7 +48,7 @@ namespace Streamiz.Kafka.Net.Kafka.Internal
             StringBuilder sb = new StringBuilder();
             sb.AppendLine($"Partition revocation took {DateTime.Now - start} ms");
             sb.AppendLine($"\tCurrent suspended active tasks: {string.Join(",", partitions.Select(p => $"{p.Topic}-{p.Partition}"))}");
-            log.Info(sb.ToString());
+            log.LogInformation(sb.ToString());
         }
     }
 }

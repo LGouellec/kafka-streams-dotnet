@@ -1,7 +1,5 @@
 ﻿using Streamiz.Kafka.Net.State.Enumerator;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Streamiz.Kafka.Net.State
 {

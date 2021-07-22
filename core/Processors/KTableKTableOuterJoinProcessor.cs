@@ -1,6 +1,7 @@
 ﻿using Streamiz.Kafka.Net.Stream;
 using Streamiz.Kafka.Net.Table.Internal;
 using System;
+using Microsoft.Extensions.Logging;
 
 namespace Streamiz.Kafka.Net.Processors
 {
@@ -15,7 +16,7 @@ namespace Streamiz.Kafka.Net.Processors
         {
             if (key == null)
             {
-                log.Warn($"{logPrefix}Skipping record due to null key. change=[{value}] topic=[{Context.Topic}] partition=[{Context.Partition}] offset=[{Context.Offset}]");
+                log.LogWarning($"{logPrefix}Skipping record due to null key. change=[{value}] topic=[{Context.Topic}] partition=[{Context.Partition}] offset=[{Context.Offset}]");
                 return;
             }
 

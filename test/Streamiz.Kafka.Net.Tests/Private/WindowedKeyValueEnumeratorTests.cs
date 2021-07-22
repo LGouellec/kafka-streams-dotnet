@@ -1,12 +1,10 @@
-﻿using Microsoft.VisualBasic;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Streamiz.Kafka.Net.Crosscutting;
 using Streamiz.Kafka.Net.SerDes;
 using Streamiz.Kafka.Net.State;
 using Streamiz.Kafka.Net.State.Enumerator;
 using Streamiz.Kafka.Net.State.InMemory;
 using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace Streamiz.Kafka.Net.Tests.Private

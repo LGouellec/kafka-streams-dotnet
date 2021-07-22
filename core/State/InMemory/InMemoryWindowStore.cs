@@ -1,5 +1,4 @@
-﻿using log4net;
-using Streamiz.Kafka.Net.Crosscutting;
+﻿using Streamiz.Kafka.Net.Crosscutting;
 using Streamiz.Kafka.Net.Processors;
 using Streamiz.Kafka.Net.State.Enumerator;
 using Streamiz.Kafka.Net.Stream;
@@ -8,6 +7,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace Streamiz.Kafka.Net.State.InMemory
 {
@@ -233,7 +233,7 @@ namespace Streamiz.Kafka.Net.State.InMemory
         
         private readonly ISet<InMemoryWindowStoreEnumeratorWrapper> openIterators = new HashSet<InMemoryWindowStoreEnumeratorWrapper>();
 
-        private readonly ILog logger = Logger.GetLogger(typeof(InMemoryWindowStore));
+        private readonly ILogger logger = Logger.GetLogger(typeof(InMemoryWindowStore));
 
         public InMemoryWindowStore(string storeName, TimeSpan retention, long size)
         {
@@ -259,7 +259,7 @@ namespace Streamiz.Kafka.Net.State.InMemory
         {
             if (openIterators.Count != 0)
             {
-                logger.Warn($"Closing {openIterators.Count} open iterators for store {Name}");
+                logger.LogWarning("Closing {OpenIteratorCount} open iterators for store {Name}", openIterators.Count, Name);
                 for (int i = 0; i< openIterators.Count; ++i)
                     openIterators.ElementAt(i).Close();
             }
@@ -337,7 +337,7 @@ namespace Streamiz.Kafka.Net.State.InMemory
 
             if (windowStartTimestamp <= observedStreamTime - retention.TotalMilliseconds)
             {
-                logger.Warn("Skipping record for expired segment.");
+                logger.LogWarning("Skipping record for expired segment");
             }
             else
             {

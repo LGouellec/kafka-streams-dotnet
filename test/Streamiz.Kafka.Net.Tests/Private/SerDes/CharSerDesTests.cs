@@ -1,6 +1,5 @@
 ﻿using NUnit.Framework;
 using Streamiz.Kafka.Net.SerDes;
-using System;
 
 namespace Streamiz.Kafka.Net.Tests.Private.SerDes
 {

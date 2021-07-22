@@ -1,7 +1,6 @@
 ﻿using Confluent.Kafka;
 using NUnit.Framework;
 using Streamiz.Kafka.Net.Errors;
-using Streamiz.Kafka.Net.Kafka;
 using Streamiz.Kafka.Net.Mock.Kafka;
 using Streamiz.Kafka.Net.Mock.Sync;
 using Streamiz.Kafka.Net.Processors;

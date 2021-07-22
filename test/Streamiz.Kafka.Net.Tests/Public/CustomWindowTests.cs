@@ -1,5 +1,4 @@
-﻿using Avro.Util;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Streamiz.Kafka.Net.Mock;
 using Streamiz.Kafka.Net.Crosscutting;
 using Streamiz.Kafka.Net.SerDes;
@@ -10,7 +9,6 @@ using Streamiz.Kafka.Net.Tests.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using TimeZoneConverter;
 using System.Runtime.InteropServices;
 

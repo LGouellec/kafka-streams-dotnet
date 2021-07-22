@@ -1,6 +1,5 @@
 ﻿using Streamiz.Kafka.Net.Crosscutting;
 using Streamiz.Kafka.Net.State.Supplier;
-using System;
 
 namespace Streamiz.Kafka.Net.State.RocksDb
 {

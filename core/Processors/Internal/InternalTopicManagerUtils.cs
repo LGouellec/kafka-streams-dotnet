@@ -1,17 +1,17 @@
 ﻿using Confluent.Kafka.Admin;
-using log4net;
 using Streamiz.Kafka.Net.Crosscutting;
 using Streamiz.Kafka.Net.Errors;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace Streamiz.Kafka.Net.Processors.Internal
 {
     internal static class InternalTopicManagerUtils
     {
-        internal static ILog log = Logger.GetLogger(typeof(InternalTopicManagerUtils));
+        internal static ILogger log = Logger.GetLogger(typeof(InternalTopicManagerUtils));
         private static readonly TimeSpan timeout = TimeSpan.FromSeconds(10);
         private static readonly ConfigResource brokerConfigResource;
 

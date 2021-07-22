@@ -3,7 +3,6 @@ using NUnit.Framework;
 using Streamiz.Kafka.Net.Mock.Kafka;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Streamiz.Kafka.Net.Crosscutting;
 using System.Linq;
 

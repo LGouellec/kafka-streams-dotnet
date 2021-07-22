@@ -1,13 +1,11 @@
 ﻿using Streamiz.Kafka.Net.Kafka;
 using Streamiz.Kafka.Net.Mock.Kafka;
 using Streamiz.Kafka.Net.Mock.Pipes;
-using Streamiz.Kafka.Net.Processors;
 using Streamiz.Kafka.Net.Processors.Internal;
 using Streamiz.Kafka.Net.SerDes;
 using Streamiz.Kafka.Net.State;
 using Streamiz.Kafka.Net.State.Internal;
 using Streamiz.Kafka.Net.Stream;
-using Streamiz.Kafka.Net.Stream.Internal;
 using System;
 using System.Collections.Generic;
 using System.Threading;

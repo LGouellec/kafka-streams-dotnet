@@ -1,4 +1,5 @@
-﻿using Streamiz.Kafka.Net.Processors.Internal;
+﻿using Microsoft.Extensions.Logging;
+using Streamiz.Kafka.Net.Processors.Internal;
 using Streamiz.Kafka.Net.State;
 using Streamiz.Kafka.Net.Table.Internal;
 
@@ -36,7 +37,7 @@ namespace Streamiz.Kafka.Net.Processors
             LogProcessingKeyValue(key, value);
             if (key == null)
             {
-                log.Warn($"Skipping record due to null key. topic=[{Context.Topic}] partition=[{Context.Partition}] offset=[{Context.Offset}]");
+                log.LogWarning($"Skipping record due to null key. topic=[{Context.Topic}] partition=[{Context.Partition}] offset=[{Context.Offset}]");
                 return;
             }
 
@@ -49,7 +50,7 @@ namespace Streamiz.Kafka.Net.Processors
                     oldValue = oldValueAndTimestamp.Value;
                     if (Context.Timestamp < oldValueAndTimestamp.Timestamp)
                     {
-                        log.Warn($"Detected out-of-order KTable update for {store.Name} at offset {Context.Offset}, partition {Context.Partition}.");
+                        log.LogWarning($"Detected out-of-order KTable update for {store.Name} at offset {Context.Offset}, partition {Context.Partition}.");
                     }
                 }
                 else

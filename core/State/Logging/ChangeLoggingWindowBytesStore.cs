@@ -2,7 +2,6 @@
 using Streamiz.Kafka.Net.State.Enumerator;
 using Streamiz.Kafka.Net.State.Helper;
 using Streamiz.Kafka.Net.State.Internal;
-using Streamiz.Kafka.Net.State.RocksDb.Internal;
 using System;
 
 namespace Streamiz.Kafka.Net.State.Logging

@@ -1,6 +1,5 @@
 ﻿using Streamiz.Kafka.Net.Crosscutting;
 using Streamiz.Kafka.Net.State.Helper;
-using Streamiz.Kafka.Net.State.RocksDb.Internal;
 using System.Collections;
 using System.Collections.Generic;
 

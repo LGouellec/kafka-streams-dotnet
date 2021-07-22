@@ -1,6 +1,7 @@
 using Streamiz.Kafka.Net.State;
 using Streamiz.Kafka.Net.Stream;
 using System;
+using Microsoft.Extensions.Logging;
 
 namespace Streamiz.Kafka.Net.Processors
 {
@@ -19,7 +20,7 @@ namespace Streamiz.Kafka.Net.Processors
             // If the key or value is null we don't need to proceed
             if (key == null || value == null)
             {
-                log.Warn($"Skipping record due to null key or value. key=[{key}] value=[{value}] topic=[{Context.Topic}] partition=[{Context.Partition}] offset=[{Context.Offset}]");
+                log.LogWarning($"Skipping record due to null key or value. key=[{key}] value=[{value}] topic=[{Context.Topic}] partition=[{Context.Partition}] offset=[{Context.Offset}]");
                 return;
             }
 

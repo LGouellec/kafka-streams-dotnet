@@ -1,5 +1,4 @@
 ﻿using Streamiz.Kafka.Net.Crosscutting;
-using Streamiz.Kafka.Net.State.InMemory;
 using Streamiz.Kafka.Net.State.Supplier;
 using Streamiz.Kafka.Net.Stream;
 using Streamiz.Kafka.Net.Table;

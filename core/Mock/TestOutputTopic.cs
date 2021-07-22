@@ -1,5 +1,4 @@
 ﻿using Confluent.Kafka;
-using log4net;
 using Streamiz.Kafka.Net.Crosscutting;
 using Streamiz.Kafka.Net.Errors;
 using Streamiz.Kafka.Net.Mock.Pipes;
@@ -7,6 +6,7 @@ using Streamiz.Kafka.Net.SerDes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace Streamiz.Kafka.Net.Mock
 {
@@ -33,7 +33,7 @@ namespace Streamiz.Kafka.Net.Mock
         private readonly IStreamConfig configuration;
         private readonly ISerDes<K> keySerdes;
         private readonly ISerDes<V> valueSerdes;
-        private readonly ILog log = Logger.GetLogger(typeof(TestOutputTopic<K, V>));
+        private readonly ILogger log = Logger.GetLogger(typeof(TestOutputTopic<K, V>));
 
         private TestOutputTopic()
         {
@@ -82,7 +82,7 @@ namespace Streamiz.Kafka.Net.Mock
                 return new TestRecord<K, V> { Key = key, Value = value };
             }catch(StreamsException e)
             {
-                log.Warn($"{e.Message}");
+                log.LogWarning(e, "{Message}", e.Message);
                 return null;
             }
         }

@@ -1,6 +1,7 @@
 ﻿using Confluent.Kafka;
 using Streamiz.Kafka.Net.Kafka;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 
 namespace Streamiz.Kafka.Net.Processors.Internal
 {
@@ -24,7 +25,7 @@ namespace Streamiz.Kafka.Net.Processors.Internal
 
         public override StreamTask CreateTask(IConsumer<byte[], byte[]> consumer, TaskId id, IEnumerable<TopicPartition> partitions)
         {
-            log.Debug($"Created task {id} with assigned partition {string.Join(",", partitions)}");
+            log.LogDebug($"Created task {id} with assigned partition {string.Join(",", partitions)}");
             return new StreamTask(
                 threadId,
                 id,

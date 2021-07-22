@@ -1,4 +1,3 @@
-using log4net;
 using Streamiz.Kafka.Net.Crosscutting;
 using Streamiz.Kafka.Net.Errors;
 using Streamiz.Kafka.Net.Kafka;
@@ -13,6 +12,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 [assembly: InternalsVisibleTo("Streamiz.Kafka.Net.Tests, PublicKey=00240000048000009400000006020000002400005253413100040000010001000d9d4a8e90a3b987f68f047ec499e5a3405b46fcad30f52abadefca93b5ebce094d05976950b38cc7f0855f600047db0a351ede5e0b24b9d5f1de6c59ab55dee145da5d13bb86f7521b918c35c71ca5642fc46ba9b04d4900725a2d4813639ff47898e1b762ba4ccd5838e2dd1e1664bd72bf677d872c87749948b1174bd91ad")]
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2, PublicKey=0024000004800000940000000602000000240000525341310004000001000100c547cac37abd99c8db225ef2f6c8a3602f3b3606cc9891605d02baa56104f4cfc0734aa39b93bf7852f7d9266654753cc297e7d2edfe0bac1cdcf9f717241550e0a7b191195b7667bb4f64bcb8e2121380fd1d9d46ad2d92d2d15605093924cceaf74c4861eff62abf69b9291ed0a340e113be11e6a7d3113e92484cf7045cc7")]
@@ -243,7 +243,7 @@ namespace Streamiz.Kafka.Net
         private readonly IThread[] threads;
         private readonly IStreamConfig configuration;
         private readonly string clientId;
-        private readonly ILog logger = Logger.GetLogger(typeof(KafkaStream));
+        private readonly ILogger logger = Logger.GetLogger(typeof(KafkaStream));
         private readonly string logPrefix = "";
         private readonly object stateLock = new object();
         private readonly QueryableStoreProvider queryableStoreProvider;
@@ -294,7 +294,7 @@ namespace Streamiz.Kafka.Net
             clientId = string.IsNullOrEmpty(configuration.ClientId) ? $"{configuration.ApplicationId.ToLower()}-{processID}" : configuration.ClientId;
             logPrefix = $"stream-application[{configuration.ApplicationId}] ";
 
-            logger.Info($"{logPrefix} Start creation of the stream application with this configuration: {configuration}");
+            logger.LogInformation("{LogPrefix} Start creation of the stream application with this configuration: {Configuration}", logPrefix, configuration);
 
             // re-write the physical topology according to the config
             topology.Builder.RewriteTopology(configuration);
@@ -397,7 +397,7 @@ namespace Streamiz.Kafka.Net
             {
                 if (SetState(State.REBALANCING))
                 {
-                    logger.Info($"{logPrefix}Starting Streams client with this topology : {topology.Describe()}");
+                    logger.LogInformation("{LogPrefix}Starting Streams client with this topology : {Topology}", logPrefix, topology.Describe());
 
                     await InitializeInternalTopicManagerAsync();
 
@@ -439,7 +439,7 @@ namespace Streamiz.Kafka.Net
             {
                 // if transition failed, it means it was either in PENDING_SHUTDOWN
                 // or NOT_RUNNING already; just check that all threads have been stopped
-                logger.Info($"{logPrefix}Already in the pending shutdown state, wait to complete shutdown");
+                logger.LogInformation("{LogPrefix}Already in the pending shutdown state, wait to complete shutdown", logPrefix);
             }
             else
             {
@@ -456,7 +456,7 @@ namespace Streamiz.Kafka.Net
                 }
 
                 SetState(State.NOT_RUNNING);
-                logger.Info($"{logPrefix}Streams client stopped completely");
+                logger.LogInformation("{LogPrefix}Streams client stopped completely", logPrefix);
             }
         }
 
@@ -521,7 +521,7 @@ namespace Streamiz.Kafka.Net
                 }
                 else
                 {
-                    logger.Info($"{logPrefix}State transition from {oldState} to {newState}");
+                    logger.LogInformation("{LogPrefix}State transition from {OldState} to {NewState}", logPrefix, oldState, newState);
                 }
                 StreamState = newState;
             }

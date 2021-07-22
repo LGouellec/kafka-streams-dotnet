@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Text;
-
-namespace Streamiz.Kafka.Net.Processors
+﻿namespace Streamiz.Kafka.Net.Processors
 {
     /// <summary>
     /// RecordQueue is a FIFO queue of (ConsumerRecord + timestamp). It also keeps track of the

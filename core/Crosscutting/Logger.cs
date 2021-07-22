@@ -1,13 +1,7 @@
-﻿using log4net;
-using log4net.Appender;
-using log4net.Config;
-using log4net.Core;
-using log4net.Layout;
-using log4net.Repository.Hierarchy;
-using System;
-using System.IO;
-using System.Reflection;
-using System.Xml;
+﻿using System;
+using Microsoft.Extensions.Logging;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
+using ILoggerFactory = Microsoft.Extensions.Logging.ILoggerFactory;
 
 namespace Streamiz.Kafka.Net.Crosscutting
 {
@@ -16,67 +10,26 @@ namespace Streamiz.Kafka.Net.Crosscutting
     /// </summary>
     public static class Logger
     {
-        private static Level defaultLevel = Level.Debug;
-        private static bool configure = false;
-        private static readonly string LOG_CONFIG_FILE = @"log4net.config";
+        private static ILoggerFactory _factory;
 
         /// <summary>
-        /// Get logger from type class.
-        /// By default, he search configuration file in root folder and filename 'log4net.config'.
-        /// If configuration doesn't have appenders, a <see cref="ConsoleAppender"/> is added.
-        /// If this file doesn't exist, please use : <see cref="Logger.GetLogger(Type, string)"/>
+        /// If logger factory is not set by the project using the library
+        /// it will create a factory with console logger configured.
         /// </summary>
-        /// <param name="type">Class type which call logger</param>
-        /// <returns>Return logger configured</returns>
-        public static ILog GetLogger(Type type) => GetLogger(type, LOG_CONFIG_FILE);
-
-        /// <summary>
-        /// Get logger from type class and initialize static configuration with <paramref name="configFile"/>.
-        /// If configuration doesn't have appenders, a <see cref="ConsoleAppender"/> is added.
-        /// </summary>
-        /// <param name="type">Class type which call logger</param>
-        /// <param name="configFile">Configuration for initialize static configuration</param>
-        /// <returns>Return logger configured</returns>
-        public static ILog GetLogger(Type type, string configFile)
+        public static ILoggerFactory LoggerFactory
         {
-            SetLog4NetConfiguration(configFile);
-
-            var logger = LogManager.GetLogger(type);
-
-            if (logger.Logger is log4net.Repository.Hierarchy.Logger &&
-                ((log4net.Repository.Hierarchy.Logger)logger.Logger).Appenders.Count == 0 &&
-                ((log4net.Repository.Hierarchy.Logger)logger.Logger).Parent.Appenders.Count == 0)
-            {
-                Hierarchy hierarchy = (Hierarchy)logger.Logger.Repository;
-
-                PatternLayout patternLayout = new PatternLayout();
-                patternLayout.ConversionPattern = "%timestamp [%thread] %level %c - %message%newline";
-                patternLayout.ActivateOptions();
-
-                ConsoleAppender console = new ConsoleAppender();
-                console.Layout = patternLayout;
-                console.Threshold = defaultLevel;
-                hierarchy.Root.AddAppender(console);
-
-                hierarchy.Root.Level = defaultLevel;
-
-                BasicConfigurator.Configure(hierarchy, console);
-            }
-            return logger;
+            get => _factory ??= Microsoft.Extensions.Logging.LoggerFactory.Create(builder => builder.AddConsole());
+            set => _factory = value;
         }
 
-        private static void SetLog4NetConfiguration(string configFile)
+        /// <summary>   
+        /// Get logger from type class.
+        /// </summary>
+        /// <param name="type">Class type which call logger</param>
+        /// <returns>Return logger configured</returns>
+        public static ILogger GetLogger(Type type)
         {
-            if (!configure && File.Exists(configFile))
-            {
-                XmlDocument log4netConfig = new XmlDocument();
-                log4netConfig.Load(File.OpenRead(configFile));
-
-                var repo = LogManager.CreateRepository(Assembly.GetEntryAssembly(), typeof(log4net.Repository.Hierarchy.Hierarchy));
-
-                log4net.Config.XmlConfigurator.Configure(repo, log4netConfig["log4net"]);
-                configure = true;
-            }
+            return LoggerFactory.CreateLogger(type);
         }
     }
 }

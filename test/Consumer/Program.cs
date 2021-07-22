@@ -1,6 +1,4 @@
 ﻿using Confluent.Kafka;
-using System;
-using System.Threading;
 
 namespace Consumer
 {

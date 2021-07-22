@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Streamiz.Kafka.Net.State
+﻿namespace Streamiz.Kafka.Net.State
 {
     /// <summary>
     /// NOT IMPLEMENTED FOR MOMENT

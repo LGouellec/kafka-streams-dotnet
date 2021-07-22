@@ -1,8 +1,5 @@
 ﻿using Streamiz.Kafka.Net.Stream;
 using System;
-using System.Net.WebSockets;
-using System.Numerics;
-using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
 namespace Streamiz.Kafka.Net.Crosscutting

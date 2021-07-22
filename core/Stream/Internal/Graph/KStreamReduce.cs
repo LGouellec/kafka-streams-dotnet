@@ -1,7 +1,6 @@
 
 using Streamiz.Kafka.Net.Processors;
 using Streamiz.Kafka.Net.Table.Internal;
-using System;
 
 namespace Streamiz.Kafka.Net.Stream.Internal.Graph
 {

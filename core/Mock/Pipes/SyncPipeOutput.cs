@@ -1,5 +1,4 @@
 ﻿using Confluent.Kafka;
-using log4net;
 using Streamiz.Kafka.Net.Errors;
 using Streamiz.Kafka.Net.Mock.Sync;
 using System;

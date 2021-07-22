@@ -1,5 +1,4 @@
-﻿using log4net;
-using RocksDbSharp;
+﻿using RocksDbSharp;
 using Streamiz.Kafka.Net.Crosscutting;
 using Streamiz.Kafka.Net.Errors;
 using Streamiz.Kafka.Net.Processors;
@@ -9,6 +8,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace Streamiz.Kafka.Net.State.RocksDb
 {
@@ -57,7 +57,7 @@ namespace Streamiz.Kafka.Net.State.RocksDb
 
     public class RocksDbKeyValueStore : IKeyValueStore<Bytes, byte[]>
     {
-        private static readonly ILog log = Logger.GetLogger(typeof(RocksDbKeyValueStore));
+        private static readonly ILogger log = Logger.GetLogger(typeof(RocksDbKeyValueStore));
         private readonly ISet<WrappedRocksRbKeyValueEnumerator> openIterators = new HashSet<WrappedRocksRbKeyValueEnumerator>();
 
 
@@ -124,7 +124,7 @@ namespace Streamiz.Kafka.Net.State.RocksDb
 
             if (openIterators.Count != 0)
             {
-                log.Warn($"Closing {openIterators.Count} open iterators for store {Name}");
+                log.LogWarning("Closing {OpenIteratorsCount} open iterators for store {Name}", openIterators.Count, Name);
                 for (int i = 0; i < openIterators.Count; ++i)
                     openIterators.ElementAt(i).Dispose();
             }
@@ -329,10 +329,10 @@ namespace Streamiz.Kafka.Net.State.RocksDb
         {
             if (KeyComparator.Invoke(from.Get, to.Get) > 0)
             {
-                log.Warn("Returning empty iterator for fetch with invalid key range: from > to. "
-                    + "This may be due to range arguments set in the wrong order, " +
-                    "or serdes that don't preserve ordering when lexicographically comparing the serialized bytes. " +
-                    "Note that the built-in numerical serdes do not follow this for negative numbers");
+                log.LogWarning("Returning empty iterator for fetch with invalid key range: from > to. "
+                            + "This may be due to range arguments set in the wrong order, " +
+                            "or serdes that don't preserve ordering when lexicographically comparing the serialized bytes. " +
+                            "Note that the built-in numerical serdes do not follow this for negative numbers");
                 return new EmptyKeyValueEnumerator<Bytes, byte[]>();
             }
 

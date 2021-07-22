@@ -1,5 +1,4 @@
-﻿using Streamiz.Kafka.Net.Processors;
-using Streamiz.Kafka.Net.Table.Internal;
+﻿using Streamiz.Kafka.Net.Table.Internal;
 
 namespace Streamiz.Kafka.Net.Processors
 {

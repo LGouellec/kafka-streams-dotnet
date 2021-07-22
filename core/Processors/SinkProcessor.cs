@@ -1,4 +1,5 @@
-﻿using Streamiz.Kafka.Net.Errors;
+﻿using Microsoft.Extensions.Logging;
+using Streamiz.Kafka.Net.Errors;
 using Streamiz.Kafka.Net.SerDes;
 
 namespace Streamiz.Kafka.Net.Processors
@@ -43,7 +44,7 @@ namespace Streamiz.Kafka.Net.Processors
 
             if (KeySerDes == null || ValueSerDes == null)
             {
-                log.Error($"{logPrefix}Impossible to send sink data because keySerdes and/or valueSerdes is not setted ! KeySerdes : {(KeySerDes != null ? KeySerDes.GetType().Name : "NULL")} | ValueSerdes : {(ValueSerDes != null ? ValueSerDes.GetType().Name : "NULL")}.");
+                log.LogError($"{logPrefix}Impossible to send sink data because keySerdes and/or valueSerdes is not setted ! KeySerdes : {(KeySerDes != null ? KeySerDes.GetType().Name : "NULL")} | ValueSerdes : {(ValueSerDes != null ? ValueSerDes.GetType().Name : "NULL")}.");
                 var s = KeySerDes == null ? "key" : "value";
                 throw new StreamsException($"{logPrefix}The {s} serdes is not compatible to the actual {s} for this processor. Change the default {s} serdes in StreamConfig or provide correct Serdes via method parameters(using the DSL)");
             }

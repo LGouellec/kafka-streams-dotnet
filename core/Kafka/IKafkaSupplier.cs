@@ -1,5 +1,4 @@
 ﻿using Confluent.Kafka;
-using Streamiz.Kafka.Net.State;
 using Streamiz.Kafka.Net.Table;
 
 namespace Streamiz.Kafka.Net.Kafka

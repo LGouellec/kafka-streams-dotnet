@@ -1,6 +1,4 @@
-﻿using Avro;
-using Avro.Specific;
-using Confluent.Kafka;
+﻿using Confluent.Kafka;
 using Confluent.SchemaRegistry;
 using Moq;
 using NUnit.Framework;

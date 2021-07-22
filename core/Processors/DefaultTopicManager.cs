@@ -1,18 +1,18 @@
 ﻿using Confluent.Kafka;
 using Confluent.Kafka.Admin;
-using log4net;
 using Streamiz.Kafka.Net.Crosscutting;
 using Streamiz.Kafka.Net.Errors;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace Streamiz.Kafka.Net.Processors
 {
     public class DefaultTopicManager : ITopicManager
     {
-        private readonly ILog log = Logger.GetLogger(typeof(DefaultTopicManager));
+        private readonly ILogger log = Logger.GetLogger(typeof(DefaultTopicManager));
         private readonly IStreamConfig config;
         private readonly TimeSpan timeout = TimeSpan.FromSeconds(10);
 
@@ -44,7 +44,7 @@ namespace Streamiz.Kafka.Net.Processors
 
             async Task<IEnumerable<string>> Run()
             {
-                log.Debug($"Starting to apply internal topics in topic manager (try: {i + 1}, max retry : {maxRetry}).");
+                log.LogDebug($"Starting to apply internal topics in topic manager (try: {i + 1}, max retry : {maxRetry}).");
                 var defaultConfig = new Dictionary<string, string>();
                 var topicsNewCreated = new List<string>();
                 var topicsToCreate = new List<string>();
@@ -72,7 +72,7 @@ namespace Streamiz.Kafka.Net.Processors
                         else
                         {
                             string msg = $"Existing internal topic {t.Key} with invalid partitions: expected {t.Value.NumberPartitions}, actual: {numberPartitions}. Please clean up invalid topics before processing.";
-                            log.Error(msg);
+                            log.LogError(msg);
                             throw new StreamsException(msg);
                         }
                     }
@@ -103,11 +103,12 @@ namespace Streamiz.Kafka.Net.Processors
                     else
                     {
                         topicsNewCreated.AddRange(topicsToCreate);
-                        log.Debug($"Internal topics has been created : {string.Join(", ", topicsNewCreated)}");
+                        log.LogDebug("Internal topics has been created : {Topics}",
+                            string.Join(", ", topicsNewCreated));
                     }
                 }
 
-                log.Debug($"Complete to apply internal topics in topic manager.");
+                log.LogDebug("Complete to apply internal topics in topic manager");
                 return topicsNewCreated;
             }
 
@@ -124,7 +125,9 @@ namespace Streamiz.Kafka.Net.Processors
                 {
                     ++i;
                     _e = e;
-                    log.Debug($"Impossible to create all internal topics: {e.Message}. Maybe an another instance of your application just created them. (try: {i + 1}, max retry : {maxRetry})");
+                    log.LogDebug(
+                        "Impossible to create all internal topics: {Message}. Maybe an another instance of your application just created them. (try: {Try}, max retry : {MaxTry})",
+                        e.Message, i + 1, maxRetry);
                 }
             }
 

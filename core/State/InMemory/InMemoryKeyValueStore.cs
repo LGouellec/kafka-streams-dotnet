@@ -1,11 +1,11 @@
-﻿using log4net;
-using Streamiz.Kafka.Net.Crosscutting;
+﻿using Streamiz.Kafka.Net.Crosscutting;
 using Streamiz.Kafka.Net.Errors;
 using Streamiz.Kafka.Net.Processors;
 using Streamiz.Kafka.Net.State.Enumerator;
 using Streamiz.Kafka.Net.State.InMemory.Internal;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace Streamiz.Kafka.Net.State.InMemory
 {
@@ -15,7 +15,7 @@ namespace Streamiz.Kafka.Net.State.InMemory
     /// </summary>
     public class InMemoryKeyValueStore : IKeyValueStore<Bytes, byte[]>
     {
-        private static readonly ILog log = Logger.GetLogger(typeof(InMemoryKeyValueStore));
+        private static readonly ILogger log = Logger.GetLogger(typeof(InMemoryKeyValueStore));
         private BytesComparer bytesComparer = new BytesComparer();
         private int size = 0;
         private readonly IDictionary<Bytes, byte[]> map = new Dictionary<Bytes, byte[]>(new BytesComparer());
@@ -183,10 +183,10 @@ namespace Streamiz.Kafka.Net.State.InMemory
         {
             if (bytesComparer.Compare(from, to) > 0)
             {
-                log.Warn("Returning empty iterator for fetch with invalid key range: from > to. " +
-                    "This may be due to range arguments set in the wrong order, " +
-                    "or serdes that don't preserve ordering when lexicographically comparing the serialized bytes. " +
-                    "Note that the built-in numerical serdes do not follow this for negative numbers");
+                log.LogWarning("Returning empty iterator for fetch with invalid key range: from > to. " +
+                            "This may be due to range arguments set in the wrong order, " +
+                            "or serdes that don't preserve ordering when lexicographically comparing the serialized bytes. " +
+                            "Note that the built-in numerical serdes do not follow this for negative numbers");
                 return new EmptyKeyValueEnumerator<Bytes, byte[]>();
             }
 

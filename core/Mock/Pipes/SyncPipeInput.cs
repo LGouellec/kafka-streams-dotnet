@@ -2,7 +2,6 @@
 using Streamiz.Kafka.Net.Crosscutting;
 using Streamiz.Kafka.Net.Processors;
 using System;
-using System.Collections.Generic;
 
 namespace Streamiz.Kafka.Net.Mock.Pipes
 {

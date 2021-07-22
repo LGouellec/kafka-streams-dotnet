@@ -1,8 +1,6 @@
 ﻿using Streamiz.Kafka.Net.State;
 using Streamiz.Kafka.Net.Table.Internal;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Streamiz.Kafka.Net.Processors
 {

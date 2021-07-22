@@ -7,9 +7,7 @@ using Streamiz.Kafka.Net.Stream;
 using Streamiz.Kafka.Net.Table;
 using Streamiz.Kafka.Net.Crosscutting;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using Streamiz.Kafka.Net.State;
 
 namespace Streamiz.Kafka.Net.Tests.Processors

@@ -1,5 +1,4 @@
 ﻿using Streamiz.Kafka.Net.State.Internal;
-using System;
 
 namespace Streamiz.Kafka.Net.State.RocksDb.Internal
 {

@@ -1,6 +1,5 @@
 ﻿using Confluent.Kafka;
 using Streamiz.Kafka.Net.SerDes;
-using System;
 using System.Collections.Generic;
 
 namespace Streamiz.Kafka.Net.Processors

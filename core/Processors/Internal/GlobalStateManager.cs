@@ -1,5 +1,4 @@
 ﻿using Confluent.Kafka;
-using log4net;
 using Streamiz.Kafka.Net.Crosscutting;
 using Streamiz.Kafka.Net.Errors;
 using Streamiz.Kafka.Net.Stream.Internal;
@@ -7,13 +6,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Extensions.Logging;
 
 namespace Streamiz.Kafka.Net.Processors.Internal
 {
     internal class GlobalStateManager : IGlobalStateManager
     {
         private readonly IDictionary<string, IStateStore> globalStores = new Dictionary<string, IStateStore>();
-        private readonly ILog log = Logger.GetLogger(typeof(GlobalStateManager));
+        private readonly ILogger log = Logger.GetLogger(typeof(GlobalStateManager));
         private readonly ProcessorTopology topology;
         private readonly IAdminClient adminClient;
         private readonly IStreamConfig config;
@@ -32,18 +32,18 @@ namespace Streamiz.Kafka.Net.Processors.Internal
 
         public void Close()
         {
-            log.Debug("Closing global state manager");
+            log.LogDebug("Closing global state manager");
             var closeFailed = new StringBuilder();
             foreach (var entry in globalStores)
             {
                 try
                 {
-                    log.Debug($"Closing store {entry.Key}");
+                    log.LogDebug("Closing store {EntryKey}", entry.Key);
                     entry.Value.Close();
                 }
                 catch (Exception e)
                 {
-                    log.Error($"Failed to close global state store {entry.Key}", e);
+                    log.LogError(e, "Failed to close global state store {EntryKey}", entry.Key);
                     closeFailed.AppendLine($"Failed to close global state store {entry.Key}. Reason: {e}");
                 }
             }
@@ -55,10 +55,10 @@ namespace Streamiz.Kafka.Net.Processors.Internal
 
         public void Flush()
         {
-            log.Debug("Flushing all global globalStores registered in the state manager");
+            log.LogDebug("Flushing all global globalStores registered in the state manager");
             foreach (var entry in globalStores)
             {
-                log.Debug($"Flushing store {entry.Key}");
+                log.LogDebug("Flushing store {EntryKey}", entry.Key);
                 entry.Value.Flush();
             }
         }

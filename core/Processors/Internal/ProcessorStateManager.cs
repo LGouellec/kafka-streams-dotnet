@@ -1,9 +1,9 @@
 ﻿using Confluent.Kafka;
-using log4net;
 using Streamiz.Kafka.Net.Crosscutting;
 using Streamiz.Kafka.Net.Errors;
 using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 
 namespace Streamiz.Kafka.Net.Processors.Internal
 {
@@ -17,7 +17,7 @@ namespace Streamiz.Kafka.Net.Processors.Internal
 
         private static readonly string STATE_CHANGELOG_TOPIC_SUFFIX = "-changelog";
 
-        private readonly ILog log;
+        private readonly ILogger log;
         private readonly string logPrefix;
         private readonly IDictionary<string, StateStoreMetadata> registeredStores = new Dictionary<string, StateStoreMetadata>();
         private readonly TaskId taskId;
@@ -52,11 +52,11 @@ namespace Streamiz.Kafka.Net.Processors.Internal
 
         public void Flush()
         {
-            log.Debug($"{logPrefix}Flushing all stores registered in the state manager");
+            log.LogDebug("{LogPrefix}Flushing all stores registered in the state manager", logPrefix);
 
             foreach (var state in registeredStores)
             {
-                log.Debug($"{logPrefix}Flushing store {state.Key}");
+                log.LogDebug("{LogPrefix}Flushing store {StateKey}", logPrefix, state.Key);
                 state.Value.Store.Flush();
             }
         }
@@ -64,7 +64,7 @@ namespace Streamiz.Kafka.Net.Processors.Internal
         public void Register(IStateStore store, StateRestoreCallback callback)
         {
             string storeName = store.Name;
-            log.Debug($"{logPrefix}Registering state store {storeName} to its state manager");
+            log.LogDebug("{LogPrefix}Registering state store {StoreName} to its state manager", logPrefix, storeName);
 
             if (registeredStores.ContainsKey(storeName))
             {
@@ -84,16 +84,16 @@ namespace Streamiz.Kafka.Net.Processors.Internal
 
             registeredStores.Add(storeName, metadata);
 
-            log.Debug($"{logPrefix}Registered state store {storeName} to its state manager");
+            log.LogDebug("{LogPrefix}Registered state store {StoreName} to its state manager", logPrefix, storeName);
         }
 
         public void Close()
         {
-            log.Debug($"{logPrefix}Closing its state manager and all the registered state stores");
+            log.LogDebug("{LogPrefix}Closing its state manager and all the registered state stores", logPrefix);
 
             foreach( var state in registeredStores)
             {
-                log.Debug($"{logPrefix}Closing storage engine {state.Key}");
+                log.LogDebug("{LogPrefix}Closing storage engine {StoreKey}", logPrefix, state.Key);
                 state.Value.Store.Close();
             }
         }

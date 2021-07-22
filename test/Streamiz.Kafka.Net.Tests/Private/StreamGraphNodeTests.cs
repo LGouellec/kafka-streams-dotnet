@@ -2,10 +2,7 @@
 using Streamiz.Kafka.Net.Processors.Internal;
 using Streamiz.Kafka.Net.SerDes;
 using Streamiz.Kafka.Net.Stream.Internal.Graph.Nodes;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Streamiz.Kafka.Net.Tests.Private
 {

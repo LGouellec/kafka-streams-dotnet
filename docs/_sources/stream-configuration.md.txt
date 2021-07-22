@@ -246,3 +246,14 @@ In case of the configuration is not wrapped in StreamConfig yet, you can directl
     config.AutoOffsetReset = AutoOffsetReset.Earliest;
     config.NumStreamThreads = 1;
 ```
+
+### Logging
+
+This library uses Microsoft.Extensions.Logging.Abstractions for logging. To set logging for this library you need to set LoggerFactory in static Logger class. If this is not set, LoggerFactory with Microsoft.Extensions.Logging.Console will be set automatically.
+
+## Configuring log4net 
+
+To configure log4net you need to install microsoft.extensions.logging.log4net.aspnetcore nuget package in your project and add log4net.config.
+``` csharp
+	var loggerFactory =  LoggerFactory.Create(builder => builder.AddLog4Net());  
+	Logger.LoggerFactory = loggerFactory;

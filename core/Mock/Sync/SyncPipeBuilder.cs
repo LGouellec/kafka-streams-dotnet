@@ -1,5 +1,4 @@
-﻿using Streamiz.Kafka.Net.Kafka;
-using Streamiz.Kafka.Net.Mock.Pipes;
+﻿using Streamiz.Kafka.Net.Mock.Pipes;
 using Streamiz.Kafka.Net.Processors;
 using System;
 using System.Threading;

@@ -1,5 +1,4 @@
 ﻿using Confluent.Kafka;
-using log4net;
 using Streamiz.Kafka.Net.Crosscutting;
 using Streamiz.Kafka.Net.Errors;
 using Streamiz.Kafka.Net.Processors.Internal;
@@ -7,12 +6,13 @@ using Streamiz.Kafka.Net.SerDes;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.Extensions.Logging;
 
 namespace Streamiz.Kafka.Net.Processors
 {
     internal abstract class AbstractProcessor<K, V> : IProcessor<K, V>
     {
-        protected ILog log = null;
+        protected ILogger log = null;
         protected string logPrefix = "";
 
         public ProcessorContext Context { get; protected set; }
@@ -77,7 +77,8 @@ namespace Streamiz.Kafka.Net.Processors
 
         public virtual void Forward<K1, V1>(K1 key, V1 value)
         {
-            log.Debug($"{logPrefix}Forward<{typeof(K1).Name},{typeof(V1).Name}> message with key {key} and value {value} to each next processor");
+            log.LogDebug("{LogPrefix}Forward<{KeyType},{ValueType}> message with key {Key} and value {Value} to each next processor",
+                logPrefix, typeof(K1).Name, typeof(V1).Name, key, value);
             foreach (var n in Next)
                 if (n is IProcessor<K1, V1>)
                     (n as IProcessor<K1, V1>).Process(key, value);
@@ -89,7 +90,9 @@ namespace Streamiz.Kafka.Net.Processors
             {
                 if (n is IProcessor<K1, V1> && n.Name.Equals(name))
                 {
-                    log.Debug($"{logPrefix}Forward<{typeof(K1).Name},{typeof(V1).Name}> message with key {key} and value {value} to processor {name}");
+                    log.LogDebug(
+                        "{LogPrefix}Forward<{KeyType},{ValueType}> message with key {Key} and value {Value} to processor {Processor}", logPrefix,
+                        typeof(K1).Name, typeof(V1).Name, key, value, name);
                     (n as IProcessor<K1, V1>).Process(key, value);
                 }
             }
@@ -97,7 +100,8 @@ namespace Streamiz.Kafka.Net.Processors
 
         public virtual void Forward(K key, V value)
         {
-            log.Debug($"{logPrefix}Forward<{typeof(K).Name},{typeof(V).Name}> message with key {key} and value {value} to each next processor");
+            log.LogDebug("{LogPrefix}Forward<{KeyType},{ValueType}> message with key {Key} and value {Value} to each next processor",
+                logPrefix, typeof(K).Name, typeof(V).Name, key, value);
             foreach (var n in Next)
             {
                 if (n is IProcessor<K, V>)
@@ -113,7 +117,9 @@ namespace Streamiz.Kafka.Net.Processors
             {
                 if (n.Name.Equals(name))
                 {
-                    log.Debug($"{logPrefix}Forward<{typeof(K).Name},{typeof(V).Name}> message with key {key} and value {value} to processor {name}");
+                    log.LogDebug(
+                        "{LogPrefix}Forward<{KeyType},{ValueType}> message with key {Key} and value {Value} to processor {Processor}", logPrefix,
+                        typeof(K).Name, typeof(V).Name, key, value, name);
                     if (n is IProcessor<K, V>)
                         (n as IProcessor<K, V>).Process(key, value);
                     else
@@ -126,16 +132,19 @@ namespace Streamiz.Kafka.Net.Processors
 
         public virtual void Init(ProcessorContext context)
         {
-            log.Debug($"{logPrefix}Initializing process context");
+            log.LogDebug("{LogPrefix}Initializing process context", logPrefix);
             Context = context;
             foreach (var n in Next)
             {
                 n.Init(context);
             }
-            log.Debug($"{logPrefix}Process context initialized");
+            log.LogDebug("{LogPrefix}Process context initialized", logPrefix);
         }
 
-        protected void LogProcessingKeyValue(K key, V value) => log.Debug($"{logPrefix}Process<{typeof(K).Name},{typeof(V).Name}> message with key {key} and {value} with record metadata [topic:{Context.RecordContext.Topic}|partition:{Context.RecordContext.Partition}|offset:{Context.RecordContext.Offset}]");
+        protected void LogProcessingKeyValue(K key, V value) => log.LogDebug(
+            "{LogPrefix}Process<{KeyType},{ValueType}> message with key {Key} and {Value} with record metadata [topic:{Topic}|partition:{Partition}|offset:{Offset}]",
+            logPrefix, typeof(K).Name, typeof(V).Name, key, value, Context.RecordContext.Topic,
+            Context.RecordContext.Partition, Context.RecordContext.Offset);
 
         #region Setter
 
@@ -165,7 +174,10 @@ namespace Streamiz.Kafka.Net.Processors
                 key = DeserializeKey(record);
                 if (key.MustBeSkipped)
                 {
-                    log.Debug($"{logPrefix} Message with record metadata [topic:{Context.RecordContext.Topic}|partition:{Context.RecordContext.Partition}|offset:{Context.RecordContext.Offset}] was skipped !");
+                    log.LogDebug(
+                        "{LogPrefix} Message with record metadata [topic:{Topic}|partition:{Partition}|offset:{Offset}] was skipped !",
+                        logPrefix, Context.RecordContext.Topic, Context.RecordContext.Partition,
+                        Context.RecordContext.Offset);
                     return;
                 }
             }
@@ -177,7 +189,10 @@ namespace Streamiz.Kafka.Net.Processors
                 value = DeserializeValue(record);
                 if (value.MustBeSkipped)
                 {
-                    log.Debug($"{logPrefix} Message with record metadata [topic:{Context.RecordContext.Topic}|partition:{Context.RecordContext.Partition}|offset:{Context.RecordContext.Offset}] was skipped !");
+                    log.LogDebug(
+                        "{LogPrefix} Message with record metadata [topic:{Topic}|partition:{Partition}|offset:{Offset}] was skipped !",
+                        logPrefix, Context.RecordContext.Topic, Context.RecordContext.Partition,
+                        Context.RecordContext.Offset);
                     return;
                 }
             }
@@ -187,7 +202,10 @@ namespace Streamiz.Kafka.Net.Processors
             if (throwException)
             {
                 var s = KeySerDes == null ? "key" : "value";
-                log.Error($"{logPrefix}Impossible to receive source data because keySerdes and/or valueSerdes is not setted ! KeySerdes : {(KeySerDes != null ? KeySerDes.GetType().Name : "NULL")} | ValueSerdes : {(ValueSerDes != null ? ValueSerDes.GetType().Name : "NULL")}.");
+                log.LogError(
+                    "{LogPrefix}Impossible to receive source data because keySerdes and/or valueSerdes is not setted ! KeySerdes : {KeySerdes} | ValueSerdes : {ValueSerdes}",
+                    logPrefix, KeySerDes != null ? KeySerDes.GetType().Name : "NULL",
+                    ValueSerDes != null ? ValueSerDes.GetType().Name : "NULL");
                 throw new StreamsException($"{logPrefix}The {s} serdes is not compatible to the actual {s} for this processor. Change the default {s} serdes in StreamConfig or provide correct Serdes via method parameters(using the DSL)");
             }
             else
@@ -236,7 +254,7 @@ namespace Streamiz.Kafka.Net.Processors
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine($"{logPrefix}Error during key deserialization [Topic:{record.Topic}|Partition:{record.Partition}|Offset:{record.Offset}|Timestamp:{record.Message.Timestamp.UnixTimestampMs}] with exception {e}.");
                     sb.AppendLine($"{logPrefix}DeserializationExceptionHandler return 'CONTINUE', so this message will be skipped and not processed !");
-                    log.Error(sb.ToString());
+                    log.LogError(sb.ToString());
                     return ObjectDeserialized.ObjectSkipped;
                 }
             }
@@ -262,7 +280,7 @@ namespace Streamiz.Kafka.Net.Processors
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine($"{logPrefix}Error during value deserialization [Topic:{record.Topic}|Partition:{record.Partition}|Offset:{record.Offset}|Timestamp:{record.Message.Timestamp.UnixTimestampMs}] with exception {e}.");
                     sb.AppendLine($"{logPrefix}DeserializationExceptionHandler return 'CONTINUE', so this message will be skipped and not processed !");
-                    log.Error(sb.ToString());
+                    log.LogError(sb.ToString());
                     return ObjectDeserialized.ObjectSkipped;
                 }
             }

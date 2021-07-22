@@ -5,9 +5,9 @@ using Streamiz.Kafka.Net.Kafka;
 using Streamiz.Kafka.Net.Kafka.Internal;
 using Streamiz.Kafka.Net.Processors.Internal;
 using Streamiz.Kafka.Net.Stream.Internal;
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace Streamiz.Kafka.Net.Processors
 {
@@ -91,7 +91,7 @@ namespace Streamiz.Kafka.Net.Processors
 
         private void Commit(bool startNewTransaction)
         {
-            log.Debug($"{logPrefix}Comitting");
+            log.LogDebug($"{logPrefix}Comitting");
 
             FlushState();
             if (eosEnabled)
@@ -115,12 +115,12 @@ namespace Streamiz.Kafka.Net.Processors
                 }
                 catch (TopicPartitionOffsetException e)
                 {
-                    log.Info($"{logPrefix}Committing failed with a non-fatal error: {e.Message}, we can ignore this since commit may succeed still");
+                    log.LogInformation($"{logPrefix}Committing failed with a non-fatal error: {e.Message}, we can ignore this since commit may succeed still");
                 }
                 catch (KafkaException e)
                 {
                     // TODO : get info about offset committing
-                    log.Error($"{logPrefix}Error during committing offset ......", e);
+                    log.LogError($"{logPrefix}Error during committing offset ......", e);
                 }
             }
             commitNeeded = false;
@@ -131,7 +131,7 @@ namespace Streamiz.Kafka.Net.Processors
         {
             IProducer<byte[], byte[]> tmpProducer = null;
             var newConfig = configuration.Clone();
-            log.Info($"${logPrefix}Creating producer client for task {Id}");
+            log.LogInformation($"${logPrefix}Creating producer client for task {Id}");
             newConfig.TransactionalId = $"{newConfig.ApplicationId}-{Id}";
             tmpProducer = kafkaSupplier.GetProducer(newConfig.ToProducerConfig(StreamThread.GetTaskProducerClientId(threadId, Id)));
             return tmpProducer;
@@ -198,7 +198,7 @@ namespace Streamiz.Kafka.Net.Processors
         public override void Close()
         {
             IsClosed = true;
-            log.Info($"{logPrefix}Closing");
+            log.LogInformation($"{logPrefix}Closing");
 
             Suspend();
 
@@ -211,7 +211,7 @@ namespace Streamiz.Kafka.Net.Processors
 
             collector.Close();
             CloseStateManager();
-            log.Info($"{logPrefix}Closed");
+            log.LogInformation($"{logPrefix}Closed");
         }
 
         public override void Commit() => Commit(true);
@@ -223,7 +223,7 @@ namespace Streamiz.Kafka.Net.Processors
 
         public override void InitializeTopology()
         {
-            log.Debug($"{logPrefix}Initializing topology with theses source processors : {string.Join(", ", processors.Select(p => p.Name))}.");
+            log.LogDebug($"{logPrefix}Initializing topology with theses source processors : {string.Join(", ", processors.Select(p => p.Name))}.");
             foreach (var p in processors)
             {
                 p.Init(Context);
@@ -240,14 +240,14 @@ namespace Streamiz.Kafka.Net.Processors
 
         public override bool InitializeStateStores()
         {
-            log.Debug($"{logPrefix}Initializing state stores.");
+            log.LogDebug($"{logPrefix}Initializing state stores.");
             RegisterStateStores();
             return false;
         }
 
         public override void Resume()
         {
-            log.Debug($"{logPrefix}Resuming");
+            log.LogDebug($"{logPrefix}Resuming");
             if (eosEnabled)
             {
                 if (producer != null)
@@ -263,7 +263,7 @@ namespace Streamiz.Kafka.Net.Processors
 
         public override void Suspend()
         {
-            log.Debug($"{logPrefix}Suspending");
+            log.LogDebug($"{logPrefix}Suspending");
 
             try
             {
@@ -307,9 +307,9 @@ namespace Streamiz.Kafka.Net.Processors
                 
                 var recordInfo = $"Topic:{record.Record.Topic}|Partition:{record.Record.Partition.Value}|Offset:{record.Record.Offset}|Timestamp:{record.Record.Message.Timestamp.UnixTimestampMs}";
 
-                log.Debug($"{logPrefix}Start processing one record [{recordInfo}]");
+                log.LogDebug($"{logPrefix}Start processing one record [{recordInfo}]");
                 record.Processor.Process(record.Record);
-                log.Debug($"{logPrefix}Completed processing one record [{recordInfo}]");
+                log.LogDebug($"{logPrefix}Completed processing one record [{recordInfo}]");
 
                 consumedOffsets.AddOrUpdate(record.Record.TopicPartition, record.Record.Offset);
                 commitNeeded = true;
@@ -332,7 +332,7 @@ namespace Streamiz.Kafka.Net.Processors
                 consumer.Pause(record.TopicPartition.ToSingle());
             }
 
-            log.Debug($"{logPrefix}Added record into the buffered queue of partition {Partition}, new queue size is {newQueueSize}");
+            log.LogDebug($"{logPrefix}Added record into the buffered queue of partition {Partition}, new queue size is {newQueueSize}");
         }
 
         public void AddRecords(IEnumerable<ConsumeResult<byte[], byte[]>> records)

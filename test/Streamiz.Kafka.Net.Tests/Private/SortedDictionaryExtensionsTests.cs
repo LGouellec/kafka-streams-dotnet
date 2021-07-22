@@ -1,12 +1,7 @@
 ﻿using NUnit.Framework;
-using NUnit.Framework.Constraints;
 using Streamiz.Kafka.Net.Crosscutting;
-using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Net;
-using System.Text;
 
 namespace Streamiz.Kafka.Net.Tests.Private
 {

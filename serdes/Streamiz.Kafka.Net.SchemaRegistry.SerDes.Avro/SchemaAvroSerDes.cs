@@ -1,4 +1,4 @@
-﻿using Confluent.SchemaRegistry;
+using Confluent.SchemaRegistry;
 using Confluent.SchemaRegistry.Serdes;
 using Streamiz.Kafka.Net.Errors;
 using Streamiz.Kafka.Net.SerDes;

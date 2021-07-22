@@ -33,8 +33,10 @@
 
   <ItemGroup>
     <PackageReference Include="Confluent.Kafka" Version="1.6.2" />
-    <PackageReference Include="log4net" Version="2.0.10" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="5.0.0" />
     <PackageReference Include="RocksDB" Version="6.17.3.16253" />
     <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
   </ItemGroup>

@@ -8,7 +8,6 @@ using Streamiz.Kafka.Net.Crosscutting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Streamiz.Kafka.Net.Errors;
 
 namespace Streamiz.Kafka.Net.Tests.Processors

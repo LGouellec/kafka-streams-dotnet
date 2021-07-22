@@ -1,11 +1,8 @@
 ﻿using Confluent.Kafka;
-using Microsoft.VisualBasic;
-using Moq;
 using NUnit.Framework;
 using Streamiz.Kafka.Net.Processors;
 using Streamiz.Kafka.Net.Processors.Internal;
 using Streamiz.Kafka.Net.SerDes;
-using System.Net;
 
 namespace Streamiz.Kafka.Net.Tests.Private
 {

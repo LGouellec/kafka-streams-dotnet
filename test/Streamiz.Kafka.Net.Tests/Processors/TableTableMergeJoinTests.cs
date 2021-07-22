@@ -3,7 +3,6 @@ using Streamiz.Kafka.Net.Mock;
 using Streamiz.Kafka.Net.SerDes;
 using Streamiz.Kafka.Net.Stream;
 using Streamiz.Kafka.Net.Table;
-using System.Linq;
 
 namespace Streamiz.Kafka.Net.Tests.Processors
 {
