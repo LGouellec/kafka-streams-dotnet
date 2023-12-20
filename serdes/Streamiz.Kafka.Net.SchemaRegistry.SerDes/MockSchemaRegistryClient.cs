@@ -349,9 +349,34 @@ namespace Streamiz.Kafka.Net.SchemaRegistry.SerDes.Mock
         /// <returns>A unique id identifying the schema.</returns>
         public Task<int> RegisterSchemaAsync(string subject, Schema schema)
             => RegisterSchemaAsync(subject, schema.SchemaString);
+        
+        /// <summary>
+        ///     If the subject is specified returns compatibility type for the specified subject.
+        ///     Otherwise returns global compatibility type.
+        /// </summary>
+        /// <param name="subject">
+        ///     The subject to get the compatibility for.
+        /// </param>
+        /// <returns>Compatibility type.</returns>
+        public Task<Compatibility> GetCompatibilityAsync(string subject = null)
+        {
+            return Task.FromResult(Compatibility.None);
+        }
+        
+        /// <summary>
+        ///     If the subject is specified sets compatibility type for the specified subject.
+        ///     Otherwise sets global compatibility type.
+        /// </summary>
+        /// <param name="subject">
+        ///      The subject to set the compatibility for.
+        /// </param>
+        /// <param name="compatibility">Compatibility type.</param>
+        /// <returns>New compatibility type.</returns>
+        public Task<Compatibility> UpdateCompatibilityAsync(Compatibility compatibility, string subject = null)
+        {
+            return Task.FromResult(compatibility);
+        }
 
         #endregion ISchemaRegistryClient Impl
-        
-        
     }
 }
