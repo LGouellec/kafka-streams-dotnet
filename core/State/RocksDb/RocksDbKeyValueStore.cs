@@ -115,6 +115,11 @@ namespace Streamiz.Kafka.Net.State
         /// Definitely True
         /// </summary>
         public bool Persistent => true;
+        
+        /// <summary>
+        /// Definitely True
+        /// </summary>
+        public bool IsLocally => true;
 
         /// <summary>
         /// return if the state store is open or not

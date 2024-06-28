@@ -21,6 +21,7 @@ namespace Streamiz.Kafka.Net.Tests.Private
             public string Name { get; }
 
             public bool Persistent => false;
+            public bool IsLocally => true;
 
             public bool IsOpen => true;
 

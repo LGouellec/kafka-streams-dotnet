@@ -48,7 +48,7 @@ namespace Streamiz.Kafka.Net.Processors.Internal
 
         public IDictionary<TopicPartition, long> ChangelogOffsets =>
             registeredStores.Values
-                .Where(s => s.ChangelogTopicPartition != null)
+                .Where(s => s.ChangelogTopicPartition != null && s.Store.IsLocally)
                 .ToDictionary(s => s.ChangelogTopicPartition, s =>
                 {
                     if (s.Offset.HasValue)
@@ -81,8 +81,8 @@ namespace Streamiz.Kafka.Net.Processors.Internal
         private bool IsChangelogStateStore(string storeName)
             => changelogTopics.ContainsKey(storeName);
 
-        private TopicPartition GetStorePartition(string storeName)
-            => new TopicPartition(changelogTopics[storeName], taskId.Partition);
+        private TopicPartition GetStorePartition(string storeName) 
+            => new(changelogTopics[storeName], taskId.Partition);
 
         #region State Manager IMPL
 
@@ -200,7 +200,9 @@ namespace Streamiz.Kafka.Net.Processors.Internal
             IDictionary<TopicPartition, long> checkpointOffsets = new Dictionary<TopicPartition, long>();
             foreach(var store in registeredStores)
             {
-                if (store.Value.ChangelogTopicPartition != null && store.Value.Store.Persistent)
+                if (store.Value.ChangelogTopicPartition != null 
+                    && store.Value.Store.Persistent
+                    && store.Value.Store.IsLocally)
                 {
                     checkpointOffsets.Add(store.Value.ChangelogTopicPartition, store.Value.Offset.HasValue ? store.Value.Offset.Value : OffsetCheckpointFile.OFFSET_UNKNOWN);
                 }
@@ -223,8 +225,9 @@ namespace Streamiz.Kafka.Net.Processors.Internal
 
             foreach(var kvStore in registeredStores)
             {
-                if(kvStore.Value.ChangelogTopicPartition == null)
+                if(kvStore.Value.ChangelogTopicPartition == null || !kvStore.Value.Store.IsLocally)
                 {
+                    kvStore.Value.ChangelogTopicPartition = null;
                     log.LogInformation($"State store {kvStore.Value.Store.Name} is not logged and hence would not be restored");
                 }
                 else if (!kvStore.Value.Store.Persistent)

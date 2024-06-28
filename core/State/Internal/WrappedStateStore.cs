@@ -44,6 +44,7 @@ namespace Streamiz.Kafka.Net.State.Internal
         public virtual string Name => wrapped.Name;
 
         public virtual bool Persistent => wrapped.Persistent;
+        public virtual bool IsLocally => wrapped.IsLocally;
 
         public virtual bool IsOpen => wrapped.IsOpen;
 

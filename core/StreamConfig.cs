@@ -553,8 +553,7 @@ namespace Streamiz.Kafka.Net
         private readonly IDictionary<string, PropertyInfo> cacheProperties 
             = new Dictionary<string, PropertyInfo>();
 
-        private readonly Dictionary<string, dynamic> configProperties 
-            = new Dictionary<string, dynamic>();
+        private readonly Dictionary<string, dynamic> configProperties = new();
 
         internal long MetricsMinIntervalMs { get; set; } = 30000;
 
@@ -3352,6 +3351,29 @@ namespace Streamiz.Kafka.Net
         {
             DefaultKeySerDes = new KS();
             DefaultValueSerDes = new VS();
+        }
+    }
+
+
+    public static class StreamConfigExtensions
+    {
+        public static T Read<T>(this IStreamConfig config)
+            where T : class
+        {
+            T t = Activator.CreateInstance<T>();
+            
+            foreach (var p in typeof(T).GetProperties())
+            {
+                var streamConfigAttr = p.GetCustomAttribute<StreamConfigPropertyAttribute>();
+                if (streamConfigAttr != null && !streamConfigAttr.ReadOnly)
+                {
+                    var r = config.Get(streamConfigAttr.KeyName);
+                    if (r != null)
+                        p.SetValue(t, r);
+                }
+            }
+
+            return t;
         }
     }
 }

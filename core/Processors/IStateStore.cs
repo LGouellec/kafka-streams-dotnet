@@ -16,6 +16,12 @@ namespace Streamiz.Kafka.Net.Processors
         /// Return if the storage is persistent or not.
         /// </summary>
         bool Persistent { get; }
+        
+        /// <summary>
+        /// Return if the storage is present locally or not.
+        /// If the store is local, an internal kafka topic will be created to offload the data
+        /// </summary>
+        bool IsLocally { get; }
 
         /// <summary>
         /// Is this store open for reading and writing

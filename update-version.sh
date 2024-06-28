@@ -12,6 +12,7 @@ files=(
   "serdes/Streamiz.Kafka.Net.SchemaRegistry.SerDes.Json/Streamiz.Kafka.Net.SchemaRegistry.SerDes.Json.csproj"
   "serdes/Streamiz.Kafka.Net.SerDes.CloudEvents/Streamiz.Kafka.Net.SerDes.CloudEvents.csproj"
   "test/Streamiz.Kafka.Net.Tests/Streamiz.Kafka.Net.Tests.csproj"
+  "remote/Streamiz.Kafka.Net.Azure.RemoteStorage/Streamiz.Kafka.Net.Azure.RemoteStorage.csproj"
   )
 
 for tag in ${tags[@]}; do

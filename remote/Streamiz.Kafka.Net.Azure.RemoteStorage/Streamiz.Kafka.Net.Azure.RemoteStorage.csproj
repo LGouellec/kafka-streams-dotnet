@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>netstandard2.0;net5.0;net6.0</TargetFrameworks>
+        <Version>1.6.0-RC1</Version>
+        <PackageVersion>1.6.0-RC1</PackageVersion>
+        <AssemblyVersion>1.6.0</AssemblyVersion>
+        <FileVersion>1.6.0</FileVersion>
+        <SignAssembly>true</SignAssembly>
+        <AssemblyOriginatorKeyFile>..\..\key.snk</AssemblyOriginatorKeyFile>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <Authors>@LGouellec</Authors>
+        <PackageProjectUrl>https://github.com/LGouellec/kafka-streams-dotnet</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/LGouellec/kafka-streams-dotnet</RepositoryUrl>
+        <PackageTags>kafka kafka-streams kafka-streams-dotnet event-streaming</PackageTags>
+        <PackageReleaseNotes>https://github.com/LGouellec/kafka-streams-dotnet/releases</PackageReleaseNotes>
+        <PackageIconUrl>https://raw.githubusercontent.com/LGouellec/kafka-streams-dotnet/master/resources/logo-kafka-stream-net.png</PackageIconUrl>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\core\Streamiz.Kafka.Net.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Azure.Data.Tables" Version="12.8.3" />
+    </ItemGroup>
+
+</Project>

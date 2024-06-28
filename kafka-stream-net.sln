@@ -49,6 +49,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Streamiz.Kafka.Net.Metrics.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Streamiz.Kafka.Net.SerDes.CloudEvents", "serdes\Streamiz.Kafka.Net.SerDes.CloudEvents\Streamiz.Kafka.Net.SerDes.CloudEvents.csproj", "{BF5D9176-D098-46DE-BF12-07D24928EBCA}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Remote", "Remote", "{B3CD3B0D-3CCF-450F-A733-A90C41F90E98}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Streamiz.Kafka.Net.Azure.RemoteStorage", "remote\Streamiz.Kafka.Net.Azure.RemoteStorage\Streamiz.Kafka.Net.Azure.RemoteStorage.csproj", "{F137CE5F-28ED-493F-9D12-E1FFBA5C0943}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -275,6 +279,18 @@ Global
 		{BF5D9176-D098-46DE-BF12-07D24928EBCA}.Release|x64.Build.0 = Release|Any CPU
 		{BF5D9176-D098-46DE-BF12-07D24928EBCA}.Release|x86.ActiveCfg = Release|Any CPU
 		{BF5D9176-D098-46DE-BF12-07D24928EBCA}.Release|x86.Build.0 = Release|Any CPU
+		{F137CE5F-28ED-493F-9D12-E1FFBA5C0943}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F137CE5F-28ED-493F-9D12-E1FFBA5C0943}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F137CE5F-28ED-493F-9D12-E1FFBA5C0943}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F137CE5F-28ED-493F-9D12-E1FFBA5C0943}.Debug|x64.Build.0 = Debug|Any CPU
+		{F137CE5F-28ED-493F-9D12-E1FFBA5C0943}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F137CE5F-28ED-493F-9D12-E1FFBA5C0943}.Debug|x86.Build.0 = Debug|Any CPU
+		{F137CE5F-28ED-493F-9D12-E1FFBA5C0943}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F137CE5F-28ED-493F-9D12-E1FFBA5C0943}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F137CE5F-28ED-493F-9D12-E1FFBA5C0943}.Release|x64.ActiveCfg = Release|Any CPU
+		{F137CE5F-28ED-493F-9D12-E1FFBA5C0943}.Release|x64.Build.0 = Release|Any CPU
+		{F137CE5F-28ED-493F-9D12-E1FFBA5C0943}.Release|x86.ActiveCfg = Release|Any CPU
+		{F137CE5F-28ED-493F-9D12-E1FFBA5C0943}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -298,6 +314,7 @@ Global
 		{30BB9AB9-FED7-43E4-9D6E-290EFE54E9D5} = {9526F3C9-8E0C-490B-A2B0-F6DA233314D0}
 		{8A77733B-6D32-453C-8D3F-5AC355AAD106} = {A34792BA-25DD-44A5-B420-9CC810379BFE}
 		{BF5D9176-D098-46DE-BF12-07D24928EBCA} = {3C748A6C-9316-4507-8FEE-77C684C4F028}
+		{F137CE5F-28ED-493F-9D12-E1FFBA5C0943} = {B3CD3B0D-3CCF-450F-A733-A90C41F90E98}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {66BAF5BD-970F-480F-92B9-761323FFAA58}

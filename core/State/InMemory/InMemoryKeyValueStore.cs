@@ -41,6 +41,11 @@ namespace Streamiz.Kafka.Net.State.InMemory
         /// Return always false in <see cref="InMemoryKeyValueStore"/>
         /// </summary>
         public bool Persistent => false;
+        
+        /// <summary>
+        /// Return always true
+        /// </summary>
+        public bool IsLocally => true;
 
         /// <summary>
         /// Is open

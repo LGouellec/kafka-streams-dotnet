@@ -40,6 +40,7 @@ namespace Streamiz.Kafka.Net.State.Internal
         public string Name { get; }
 
         public bool Persistent => true;
+        public bool IsLocally => true;
 
         public bool IsOpen => isOpen;
 

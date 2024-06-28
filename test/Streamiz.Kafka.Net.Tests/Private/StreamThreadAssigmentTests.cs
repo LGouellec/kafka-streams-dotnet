@@ -24,6 +24,7 @@ namespace Streamiz.Kafka.Net.Tests.Private
         {
             public string Name { get; set; }
             public bool Persistent { get; }
+            public bool IsLocally => true;
             public bool IsOpen { get; }
             public void Init(ProcessorContext context, IStateStore root)
             {

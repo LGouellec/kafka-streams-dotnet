@@ -1,15 +1,14 @@
-using Confluent.Kafka;
 using Streamiz.Kafka.Net;
-using Streamiz.Kafka.Net.SerDes;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Confluent.Kafka;
+using Microsoft.Extensions.Logging;
+using Streamiz.Kafka.Net.Azure.RemoteStorage;
 using Streamiz.Kafka.Net.Metrics;
 using Streamiz.Kafka.Net.Metrics.Prometheus;
+using Streamiz.Kafka.Net.SerDes;
 using Streamiz.Kafka.Net.Stream;
-using System.Collections.Generic;
-using Microsoft.Extensions.Logging;
-using Streamiz.Kafka.Net.Metrics.Prometheus;
 using Streamiz.Kafka.Net.Table;
 
 namespace sample_stream
@@ -18,18 +17,14 @@ namespace sample_stream
     {
         public static async Task Main(string[] args)
         {
-            var config = new StreamConfig<StringSerDes, StringSerDes>{
+           var config = new StreamConfig<StringSerDes, StringSerDes>{
                 ApplicationId = $"test-app",
                 BootstrapServers = "localhost:9092",
                 AutoOffsetReset = AutoOffsetReset.Earliest,
-                PartitionAssignmentStrategy = PartitionAssignmentStrategy.RoundRobin,
-                Partitioner = Partitioner.ConsistentRandom,
-                Debug = "broker,topic,msg",
-                ClientId = "ttoot",
                 Logger = LoggerFactory.Create((b) =>
                 {
                     b.AddConsole();
-                    b.SetMinimumLevel(LogLevel.Debug);
+                    b.SetMinimumLevel(LogLevel.Information);
                 })
             };
             config.MetricsRecording = MetricsRecordingLevel.DEBUG;
@@ -47,23 +42,16 @@ namespace sample_stream
         
         private static Topology BuildTopology()
         {
-            TimeSpan windowSize = TimeSpan.FromHours(1);
-            
             var builder = new StreamBuilder();
-          /*  builder.Stream<string, string>("input")
-                .GroupByKey()
-                .WindowedBy(TumblingWindowOptions.Of(windowSize))
-                .Count(RocksDbWindows.As<string, long>("count-store")
-                    .WithKeySerdes(new StringSerDes())
-                    .WithValueSerdes(new Int64SerDes())
-                    .WithCachingEnabled())
-                .ToStream()
-                .Map((k,v) => new KeyValuePair<string,string>(k.ToString(), v.ToString()))
-                .To("output",
-                    new StringSerDes(),
-                    new StringSerDes());*/
-
-          builder.GlobalTable<string, string>("global");
+            
+            var table = builder
+                .Table("table-input",
+                    AzureRemoteStorage.As<string, string>()
+                        .WithCachingEnabled());
+            
+            builder.Stream<string, string>("input")
+                .Join(table, (s, s1) => s + ":" + s1)
+                .To("output");
             
             return builder.Build();
         }

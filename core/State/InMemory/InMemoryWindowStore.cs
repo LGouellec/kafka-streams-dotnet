@@ -288,6 +288,7 @@ namespace Streamiz.Kafka.Net.State.InMemory
         public string Name { get; }
 
         public bool Persistent => false;
+        public bool IsLocally => true;
 
         public bool IsOpen { get; private set; } = false;
 

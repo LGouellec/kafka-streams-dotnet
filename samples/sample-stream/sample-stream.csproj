@@ -24,6 +24,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\core\Streamiz.Kafka.Net.csproj" />
     <ProjectReference Include="..\..\metrics\Streamiz.Kafka.Net.Metrics.Prometheus\Streamiz.Kafka.Net.Metrics.Prometheus.csproj" />
+    <ProjectReference Include="..\..\remote\Streamiz.Kafka.Net.Azure.RemoteStorage\Streamiz.Kafka.Net.Azure.RemoteStorage.csproj" />
     <ProjectReference Include="..\..\serdes\Streamiz.Kafka.Net.SerDes.CloudEvents\Streamiz.Kafka.Net.SerDes.CloudEvents.csproj" />
   </ItemGroup>
 

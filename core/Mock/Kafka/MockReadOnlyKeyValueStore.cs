@@ -14,6 +14,7 @@ namespace Streamiz.Kafka.Net.Mock.Kafka
         public string Name => "MockStore";
 
         public bool Persistent => false;
+        public bool IsLocally => true;
 
         public bool IsOpen => true;
 
