@@ -84,6 +84,12 @@ namespace Streamiz.Kafka.Net.Kafka
         /// <returns>Return an admin client instance</returns>
         public IAdminClient GetAdmin(AdminClientConfig config)
         {
+            // No statistics handler is attached below, and an admin client is never polled. librdkafka
+            // would still emit a statistics payload every StatisticsIntervalMs and enqueue it on the
+            // client's event queue, where nothing dequeues it, so the queue grows for the lifetime of
+            // the process. Statistics on this client are of no use to anyone: switch them off.
+            config.StatisticsIntervalMs = 0;
+
             AdminClientBuilder builder = builderKafkaHandler.GetAdminBuilder(config);
             builder.SetLogHandler(loggerAdapter.LogAdmin);
             builder.SetErrorHandler(loggerAdapter.ErrorAdmin);
@@ -164,6 +170,12 @@ namespace Streamiz.Kafka.Net.Kafka
         /// <returns>Return a kafka restore consumer built</returns>
         public IConsumer<byte[], byte[]> GetRestoreConsumer(ConsumerConfig config)
         {
+            // Same reasoning as GetAdmin, with a sharper edge: this consumer has no statistics handler
+            // either, and StoreChangelogReader stops polling it once every store has caught up. From
+            // that point the client is idle for the lifetime of the process while librdkafka keeps
+            // enqueuing statistics payloads that are never dequeued.
+            config.StatisticsIntervalMs = 0;
+
             ConsumerBuilder<byte[], byte[]> builder = builderKafkaHandler.GetConsumerBuilder(config);
             builder.SetLogHandler(loggerAdapter.LogConsume);
             builder.SetErrorHandler(loggerAdapter.ErrorConsume);
