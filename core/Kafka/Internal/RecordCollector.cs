@@ -259,7 +259,9 @@ namespace Streamiz.Kafka.Net.Kafka.Internal
                             Key = report.Key,
                             Value = report.Value,
                             Headers = report.Headers,
-                            Timestamp = report.Timestamp,
+                            // DeliveryReport.Timestamp is often LogAppendTime/NotAvailable after a
+                            // failed produce; Confluent.Kafka only accepts Default/CreateTime on produce.
+                            Timestamp = new Timestamp(report.Timestamp.UnixTimestampMs, TimestampType.CreateTime),
                             Partition = report.Partition,
                             Topic = report.Topic
                         };
@@ -311,7 +313,9 @@ namespace Streamiz.Kafka.Net.Kafka.Internal
                             Key = retryRecord.Key,
                             Value = retryRecord.Value,
                             Headers = retryRecord.Headers,
-                            Timestamp = retryRecord.Timestamp
+                            Timestamp = new Timestamp(
+                                retryRecord.Timestamp.UnixTimestampMs,
+                                TimestampType.CreateTime)
                         }, HandleError);
                 }
                 catch (ProduceException<byte[], byte[]> produceException)
@@ -364,7 +368,9 @@ namespace Streamiz.Kafka.Net.Kafka.Internal
                     Key = buildDeliveryReport.Key,
                     Value = buildDeliveryReport.Value,
                     Headers = buildDeliveryReport.Headers,
-                    Timestamp = buildDeliveryReport.Timestamp,
+                    Timestamp = new Timestamp(
+                        buildDeliveryReport.Timestamp.UnixTimestampMs,
+                        TimestampType.CreateTime),
                     Partition = buildDeliveryReport.Partition,
                     Topic = buildDeliveryReport.Topic
                 };
